@@ -23,7 +23,6 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.List;
 import java.util.Optional;
 
 @Mod(MythicRitual.MOD_ID)
@@ -52,8 +51,8 @@ public class MythicRitual {
         ItemStack itemStack = context.getItemInHand();
         RecipeManager recipes = level.getRecipeManager();
         RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
-        List<RecipeHolder<RitualRecipe>> t = recipes.getAllRecipesFor(type);
-        LOGGER.debug("all recipes for type {} \n{}", type, t);
+//        List<RecipeHolder<RitualRecipe>> t = recipes.getAllRecipesFor(type);
+//        LOGGER.debug("all recipes for type {} \n{}", type, t);
         RitualRecipeInput input = new RitualRecipeInput(blockState, pos, itemStack);
         Optional<RecipeHolder<RitualRecipe>> optional = recipes.getRecipeFor(
                 type,

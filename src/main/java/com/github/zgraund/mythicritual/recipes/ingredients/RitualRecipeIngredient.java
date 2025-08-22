@@ -1,6 +1,7 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -18,6 +19,8 @@ public sealed interface RitualRecipeIngredient permits ItemRitualRecipeIngredien
     );
 
     ResourceLocation type();
+
+    Vec3i offset();
 
     Boolean test(Entity entity);
 
