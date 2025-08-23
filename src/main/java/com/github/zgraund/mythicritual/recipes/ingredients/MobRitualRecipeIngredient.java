@@ -21,6 +21,6 @@ public record MobRitualRecipeIngredient(
     @Override
     public Boolean test(Entity entity) {
         if (!(entity instanceof LivingEntity)) return false;
-        return BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
+        return entity.isAlive() && BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
     }
 }

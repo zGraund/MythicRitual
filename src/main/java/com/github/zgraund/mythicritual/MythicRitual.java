@@ -5,6 +5,8 @@ import com.github.zgraund.mythicritual.recipes.RitualRecipeInput;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -43,9 +45,11 @@ public class MythicRitual {
     // FIXME: ugly in game debugging, to remove asap
     @SubscribeEvent // on the game event bus
     public void useItemOnBlock(UseItemOnBlockEvent event) {
+        if (event.getPlayer() == null) return;
         if (event.getUsePhase() != UseItemOnBlockEvent.UsePhase.BLOCK) return;
         UseOnContext context = event.getUseOnContext();
         Level level = context.getLevel();
+        if (level.isClientSide) return;
         BlockPos pos = context.getClickedPos();
         BlockState blockState = level.getBlockState(pos);
         ItemStack itemStack = context.getItemInHand();
@@ -53,18 +57,22 @@ public class MythicRitual {
         RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
 //        List<RecipeHolder<RitualRecipe>> t = recipes.getAllRecipesFor(type);
 //        LOGGER.debug("all recipes for type {} \n{}", type, t);
-        RitualRecipeInput input = new RitualRecipeInput(blockState, pos, itemStack);
+        RitualRecipeInput input = new RitualRecipeInput(blockState, pos, itemStack, level);
         Optional<RecipeHolder<RitualRecipe>> optional = recipes.getRecipeFor(
                 type,
                 input,
                 level
         );
-        ItemStack result = optional
-                .map(RecipeHolder::value)
-                .map(e -> e.assemble(input, level.registryAccess()))
-                .orElse(ItemStack.EMPTY);
-        if (result.isEmpty()) return;
+        if (optional.isEmpty()) return;
+        ItemStack result = optional.get().value().assemble(input, level.registryAccess());
+        event.getPlayer().swing(event.getHand(), true);
+        ItemEntity entity = new ItemEntity(level,
+                pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
+                result);
+        entity.setDeltaMovement(0, 0.20, 0);
+        level.addFreshEntity(entity);
         LOGGER.debug("crafting input {} and result {}", input, result);
+        event.cancelWithResult(ItemInteractionResult.SUCCESS);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {}
