@@ -64,7 +64,7 @@ public class MythicRitual {
                 level
         );
         if (optional.isEmpty()) return;
-        ItemStack result = optional.get().value().assemble(input, level.registryAccess());
+        ItemStack result = optional.get().value().consume(input);
         event.getPlayer().swing(event.getHand(), true);
         ItemEntity entity = new ItemEntity(level,
                 pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,

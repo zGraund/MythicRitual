@@ -1,5 +1,6 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
+import com.github.zgraund.mythicritual.util.EntityUse;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,7 +23,11 @@ public sealed interface RitualRecipeIngredient permits ItemRitualRecipeIngredien
 
     Vec3i offset();
 
-    Boolean test(Entity entity);
+    default Boolean test(Entity entity) {return test(new EntityUse(entity, 0));}
+
+    Boolean test(EntityUse entityUse);
+
+    default int quantity() {return 1;}
 
     // TODO: BlockState as ingredient
     // Boolean test(BlockState block);

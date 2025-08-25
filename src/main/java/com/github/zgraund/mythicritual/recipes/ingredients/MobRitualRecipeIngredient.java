@@ -1,5 +1,6 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
+import com.github.zgraund.mythicritual.util.EntityUse;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Vec3i;
@@ -7,6 +8,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public record MobRitualRecipeIngredient(
         ResourceLocation type,
@@ -19,8 +23,11 @@ public record MobRitualRecipeIngredient(
     );
 
     @Override
-    public Boolean test(Entity entity) {
-        if (!(entity instanceof LivingEntity)) return false;
+    @Nonnull
+    public Boolean test(@NotNull EntityUse entityUse) {
+        Entity entity = entityUse.entity();
+        int used = entityUse.used();
+        if (!(entity instanceof LivingEntity) || used >= 1) return false;
         return entity.isAlive() && BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
     }
 }

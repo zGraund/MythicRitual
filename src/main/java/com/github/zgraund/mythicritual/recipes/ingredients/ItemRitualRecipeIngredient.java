@@ -1,5 +1,6 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
+import com.github.zgraund.mythicritual.util.EntityUse;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,6 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public record ItemRitualRecipeIngredient(
         ResourceLocation type,
@@ -23,9 +27,12 @@ public record ItemRitualRecipeIngredient(
     );
 
     @Override
-    public Boolean test(Entity entity) {
+    @Nonnull
+    public Boolean test(@NotNull EntityUse entityUse) {
+        Entity entity = entityUse.entity();
+        int used = entityUse.used();
         if (!(entity instanceof ItemEntity itemEntity)) return false;
         ItemStack input = itemEntity.getItem();
-        return input.is(BuiltInRegistries.ITEM.get(type)) && input.getCount() >= quantity;
+        return input.is(BuiltInRegistries.ITEM.get(type)) && input.getCount() - used >= quantity;
     }
 }
