@@ -4,11 +4,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 
-public final class EntityUse {
+public final class EntityConsumer {
     private final Entity entity;
     private int used;
 
-    public EntityUse(Entity entity, int used) {
+    public EntityConsumer(Entity entity, int used) {
         this.entity = entity;
         this.used = used;
     }

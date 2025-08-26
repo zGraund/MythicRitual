@@ -1,0 +1,102 @@
+package com.github.zgraund.mythicritual.recipes;
+
+import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
+import com.github.zgraund.mythicritual.util.EntityConsumer;
+import com.github.zgraund.mythicritual.util.RotationUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public final class RitualRecipeContext implements RecipeInput {
+    private final HashMap<BlockPos, List<EntityConsumer>> toConsume = new HashMap<>();
+    private final BlockState target;
+    private final BlockPos origin;
+    private final ItemStack trigger;
+    private final Level level;
+    private final Player player;
+
+    public RitualRecipeContext(BlockState target, BlockPos origin, ItemStack trigger, Level level, Player player) {
+        this.target = target;
+        this.origin = origin;
+        this.trigger = trigger;
+        this.level = level;
+        this.player = player;
+    }
+
+    @NonNull
+    public HashMap<BlockPos, List<EntityConsumer>> entitiesByPosition(@NotNull List<RitualRecipeIngredient> ingredients) {
+        HashMap<BlockPos, List<EntityConsumer>> out = new HashMap<>();
+        for (RitualRecipeIngredient ingredient : ingredients) {
+            BlockPos target = RotationUtils.relativeTo(origin, ingredient.offset(), player.getDirection());
+            if (out.containsKey(target)) continue;
+            out.put(target, level.getEntities(null, new AABB(target)).stream().map(e -> new EntityConsumer(e, 0)).collect(Collectors.toList()));
+        }
+        return out;
+    }
+
+    public boolean accept(RitualRecipe recipe) {
+        return target == recipe.target()
+               && trigger.is(recipe.trigger().getItem())
+               && trigger.getCount() >= recipe.trigger().getCount()
+               && (!recipe.needSky() || level.canSeeSky(origin.above()))
+               && recipe.dimensions().stream().anyMatch(level.dimension()::equals);
+    }
+
+    public void consume() {
+        toConsume.values().stream().flatMap(List::stream).forEach(EntityConsumer::consume);
+    }
+
+    public void commit(HashMap<BlockPos, List<EntityConsumer>> entities) {
+        toConsume.putAll(entities);
+    }
+
+    @Override
+    @Nonnull
+    public ItemStack getItem(int index) {
+        if (index != 0) throw new IllegalArgumentException("No item for index " + index);
+        return this.trigger();
+    }
+
+    @Override
+    public int size() {
+        return 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    public BlockState target() {return target;}
+
+    public BlockPos origin() {return origin;}
+
+    public ItemStack trigger() {return trigger;}
+
+    public Level level() {return level;}
+
+    public Player player() {return player;}
+
+    public HashMap<BlockPos, List<EntityConsumer>> toConsume() {return toConsume;}
+
+    @Override
+    public String toString() {
+        return "RitualRecipeContext[" +
+               "target=" + target + ", " +
+               "origin=" + origin + ", " +
+               "trigger=" + trigger + ", " +
+               "level=" + level + ", " +
+               "matched entities=" + toConsume + ']';
+    }
+}

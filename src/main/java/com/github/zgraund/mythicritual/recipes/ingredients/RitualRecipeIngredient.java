@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
-import com.github.zgraund.mythicritual.util.EntityUse;
+import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,9 +23,9 @@ public sealed interface RitualRecipeIngredient permits ItemRitualRecipeIngredien
 
     Vec3i offset();
 
-    default Boolean test(Entity entity) {return test(new EntityUse(entity, 0));}
+    default Boolean test(Entity entity) {return test(new EntityConsumer(entity, 0));}
 
-    Boolean test(EntityUse entityUse);
+    Boolean test(EntityConsumer entityConsumer);
 
     default int quantity() {return 1;}
 

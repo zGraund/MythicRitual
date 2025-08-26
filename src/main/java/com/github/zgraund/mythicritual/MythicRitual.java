@@ -1,7 +1,7 @@
 package com.github.zgraund.mythicritual;
 
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.RitualRecipeInput;
+import com.github.zgraund.mythicritual.recipes.RitualRecipeContext;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -57,14 +57,15 @@ public class MythicRitual {
         RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
 //        List<RecipeHolder<RitualRecipe>> t = recipes.getAllRecipesFor(type);
 //        LOGGER.debug("all recipes for type {} \n{}", type, t);
-        RitualRecipeInput input = new RitualRecipeInput(blockState, pos, itemStack, level);
+        RitualRecipeContext input = new RitualRecipeContext(blockState, pos, itemStack, level, event.getPlayer());
         Optional<RecipeHolder<RitualRecipe>> optional = recipes.getRecipeFor(
                 type,
                 input,
                 level
         );
+//        context.getPlayer().getDirection()
         if (optional.isEmpty()) return;
-        ItemStack result = optional.get().value().consume(input);
+        ItemStack result = optional.get().value().execute(input);
         event.getPlayer().swing(event.getHand(), true);
         ItemEntity entity = new ItemEntity(level,
                 pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,

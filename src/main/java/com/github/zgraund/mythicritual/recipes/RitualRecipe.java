@@ -3,9 +3,12 @@ package com.github.zgraund.mythicritual.recipes;
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
-import com.github.zgraund.mythicritual.util.EntityUse;
+import com.github.zgraund.mythicritual.util.EntityConsumer;
+import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -24,16 +27,25 @@ public record RitualRecipe(
         BlockState target,
         ItemStack trigger,
         List<RitualRecipeIngredient> ingredients,
-        ItemStack result
-) implements Recipe<RitualRecipeInput> {
+        ItemStack result,
+        List<ResourceKey<Level>> dimensions,
+//        String effect,
+        boolean needSky,
+        boolean consumeTrigger
+) implements Recipe<RitualRecipeContext> {
     @Override
-    public boolean matches(@NotNull RitualRecipeInput input, @NotNull Level level) {
-        if (input.target() != target || !input.trigger().is(trigger.getItem()) || input.trigger().getCount() < trigger.getCount()) return false;
+    public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
+        Logger l = MythicRitual.LOGGER;
 
-        HashMap<BlockPos, List<EntityUse>> inputEntities = input.entitiesByPosition(ingredients);
+        l.debug("dimension accepted {}", dimensions);
+        if (!context.accept(this)) {
+            l.debug("early check failed");
+            return false;
+        }
+
+        HashMap<BlockPos, List<EntityConsumer>> inputEntities = context.entitiesByPosition(ingredients);
         if (inputEntities.isEmpty()) return false;
 
-        Logger l = MythicRitual.LOGGER;
         l.debug("list of recipe ingredients:\n{}\nlist of ingredients entities:\n{}\npositions: {}, total entities: {}", ingredients, inputEntities, inputEntities.size(),
                 inputEntities
                         .values()
@@ -42,14 +54,18 @@ public record RitualRecipe(
                         .sum());
 
         for (RitualRecipeIngredient ingredient : ingredients) {
-            BlockPos expected = input.origin().offset(ingredient.offset());
+            BlockPos expected = RotationUtils.relativeTo(context.origin(), ingredient.offset(), context.player().getDirection());
 
-            List<EntityUse> entitiesAt = inputEntities.get(expected);
+            List<EntityConsumer> entitiesAt = inputEntities.get(expected);
+            if (entitiesAt == null || entitiesAt.isEmpty()) {
+                l.debug("position {} missing or empty", expected);
+                return false;
+            }
 
-            Optional<EntityUse> match = entitiesAt.stream()
-                                                  .peek(e -> l.debug("testing ingredient {} with input {}", ingredient, e.entity()))
-                                                  .filter(ingredient::test)
-                                                  .findFirst();
+            Optional<EntityConsumer> match = entitiesAt.stream()
+                                                       .peek(e -> l.debug("testing ingredient {} with input {}", ingredient, e.entity()))
+                                                       .filter(ingredient::test)
+                                                       .findFirst();
 
             if (match.isPresent()) {
                 match.get().increment(ingredient.quantity());
@@ -63,20 +79,27 @@ public record RitualRecipe(
 
         l.debug("outer loop finished full match");
 
-        input.commit(inputEntities);
+        context.commit(inputEntities);
         return true;
     }
 
     @Override
     @Nonnull
-    public ItemStack assemble(@NotNull RitualRecipeInput input, HolderLookup.@NotNull Provider registries) {
+    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {
         return this.getResultItem(registries).copy();
     }
 
     @Nonnull
-    public ItemStack consume(@NotNull RitualRecipeInput input) {
-        input.toConsume().values().stream().flatMap(List::stream).forEach(EntityUse::consume);
-        return assemble(input, input.level().registryAccess());
+    public ItemStack execute(@NotNull RitualRecipeContext context) {
+        context.consume();
+        if (consumeTrigger && !context.player().isCreative()) {
+            if (context.player().getMainHandItem().isStackable()) {
+                context.player().getMainHandItem().shrink(trigger.getCount());
+            } else {
+                context.player().getMainHandItem().hurtAndBreak(context.trigger().getMaxDamage(), context.player(), EquipmentSlot.MAINHAND);
+            }
+        }
+        return assemble(context, context.level().registryAccess());
     }
 
     @Override

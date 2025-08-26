@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
-import com.github.zgraund.mythicritual.util.EntityUse;
+import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -28,9 +28,9 @@ public record ItemRitualRecipeIngredient(
 
     @Override
     @Nonnull
-    public Boolean test(@NotNull EntityUse entityUse) {
-        Entity entity = entityUse.entity();
-        int used = entityUse.used();
+    public Boolean test(@NotNull EntityConsumer entityConsumer) {
+        Entity entity = entityConsumer.entity();
+        int used = entityConsumer.used();
         if (!(entity instanceof ItemEntity itemEntity)) return false;
         ItemStack input = itemEntity.getItem();
         return input.is(BuiltInRegistries.ITEM.get(type)) && input.getCount() - used >= quantity;

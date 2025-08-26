@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.recipes.ingredients;
 
-import com.github.zgraund.mythicritual.util.EntityUse;
+import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Vec3i;
@@ -24,9 +24,9 @@ public record MobRitualRecipeIngredient(
 
     @Override
     @Nonnull
-    public Boolean test(@NotNull EntityUse entityUse) {
-        Entity entity = entityUse.entity();
-        int used = entityUse.used();
+    public Boolean test(@NotNull EntityConsumer entityConsumer) {
+        Entity entity = entityConsumer.entity();
+        int used = entityConsumer.used();
         if (!(entity instanceof LivingEntity) || used >= 1) return false;
         return entity.isAlive() && BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
     }
