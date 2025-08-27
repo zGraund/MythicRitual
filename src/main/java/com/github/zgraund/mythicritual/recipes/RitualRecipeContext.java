@@ -52,7 +52,7 @@ public final class RitualRecipeContext implements RecipeInput {
     public boolean accept(@NotNull RitualRecipe recipe) {
         return target.getBlock().defaultBlockState() == recipe.target()
                && trigger.is(recipe.trigger().getItem())
-               && trigger.getCount() >= recipe.trigger().getCount()
+               && trigger.getCount() >= (recipe.trigger().isStackable() ? recipe.trigger().getCount() : 1)
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals));
     }
@@ -65,7 +65,7 @@ public final class RitualRecipeContext implements RecipeInput {
         if (player.isCreative()) return;
         ItemStack item = player.getItemInHand(hand);
         if (item.isDamageableItem()) {
-            item.hurtAndBreak(item.getMaxDamage(), player, LivingEntity.getSlotForHand(hand));
+            item.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
         } else {
             item.shrink(quantity);
         }
