@@ -23,6 +23,7 @@ public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
                     RitualRecipeIngredient.CODEC.listOf().fieldOf("ingredients").forGetter(RitualRecipe::ingredients),
                     ItemStack.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
                     ResourceKey.codec(Registries.DIMENSION).listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
+                    EffectHelper.CODEC.optionalFieldOf("effect", EffectHelper.NONE).forGetter(RitualRecipe::effect),
                     Codec.BOOL.optionalFieldOf("needSky", false).forGetter(RitualRecipe::needSky),
                     Codec.BOOL.optionalFieldOf("consumeTrigger", false).forGetter(RitualRecipe::consumeTrigger)
             ).apply(inst, RitualRecipe::new)

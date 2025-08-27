@@ -4,6 +4,8 @@ import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredien
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -19,19 +21,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class RitualRecipeContext implements RecipeInput {
-    private final HashMap<BlockPos, List<EntityConsumer>> toConsume = new HashMap<>();
+    private final HashMap<BlockPos, List<EntityConsumer>> validatedInput = new HashMap<>();
     private final BlockState target;
     private final BlockPos origin;
     private final ItemStack trigger;
     private final Level level;
     private final Player player;
+    private final InteractionHand hand;
 
-    public RitualRecipeContext(BlockState target, BlockPos origin, ItemStack trigger, Level level, Player player) {
+    public RitualRecipeContext(BlockState target, BlockPos origin, ItemStack trigger, Level level, Player player, InteractionHand hand) {
         this.target = target;
         this.origin = origin;
         this.trigger = trigger;
         this.level = level;
         this.player = player;
+        this.hand = hand;
     }
 
     @NonNull
@@ -45,20 +49,30 @@ public final class RitualRecipeContext implements RecipeInput {
         return out;
     }
 
-    public boolean accept(RitualRecipe recipe) {
-        return target == recipe.target()
+    public boolean accept(@NotNull RitualRecipe recipe) {
+        return target.getBlock().defaultBlockState() == recipe.target()
                && trigger.is(recipe.trigger().getItem())
                && trigger.getCount() >= recipe.trigger().getCount()
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
-               && recipe.dimensions().stream().anyMatch(level.dimension()::equals);
+               && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals));
     }
 
     public void consume() {
-        toConsume.values().stream().flatMap(List::stream).forEach(EntityConsumer::consume);
+        validatedInput.values().stream().flatMap(List::stream).forEach(EntityConsumer::consume);
+    }
+
+    public void shrink(int quantity) {
+        if (player.isCreative()) return;
+        ItemStack item = player.getItemInHand(hand);
+        if (item.isDamageableItem()) {
+            item.hurtAndBreak(item.getMaxDamage(), player, LivingEntity.getSlotForHand(hand));
+        } else {
+            item.shrink(quantity);
+        }
     }
 
     public void commit(HashMap<BlockPos, List<EntityConsumer>> entities) {
-        toConsume.putAll(entities);
+        validatedInput.putAll(entities);
     }
 
     @Override
@@ -86,17 +100,21 @@ public final class RitualRecipeContext implements RecipeInput {
 
     public Level level() {return level;}
 
+    public InteractionHand hand() {return hand;}
+
     public Player player() {return player;}
 
-    public HashMap<BlockPos, List<EntityConsumer>> toConsume() {return toConsume;}
+    public HashMap<BlockPos, List<EntityConsumer>> validatedInput() {return validatedInput;}
 
     @Override
     public String toString() {
-        return "RitualRecipeContext[" +
-               "target=" + target + ", " +
-               "origin=" + origin + ", " +
-               "trigger=" + trigger + ", " +
-               "level=" + level + ", " +
-               "matched entities=" + toConsume + ']';
+        return "RitualRecipeContext{" +
+               "validatedInput=" + validatedInput +
+               ", target=" + target +
+               ", origin=" + origin +
+               ", trigger=" + trigger +
+               ", level=" + level +
+               ", player=" + player +
+               '}';
     }
 }

@@ -8,7 +8,7 @@ import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -29,20 +29,14 @@ public record RitualRecipe(
         List<RitualRecipeIngredient> ingredients,
         ItemStack result,
         List<ResourceKey<Level>> dimensions,
-//        String effect,
+        EffectHelper effect,
         boolean needSky,
         boolean consumeTrigger
 ) implements Recipe<RitualRecipeContext> {
     @Override
     public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
         Logger l = MythicRitual.LOGGER;
-
-        l.debug("dimension accepted {}", dimensions);
-        if (!context.accept(this)) {
-            l.debug("early check failed");
-            return false;
-        }
-
+        if (!context.accept(this)) return false;
         HashMap<BlockPos, List<EntityConsumer>> inputEntities = context.entitiesByPosition(ingredients);
         if (inputEntities.isEmpty()) return false;
 
@@ -92,13 +86,9 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack execute(@NotNull RitualRecipeContext context) {
         context.consume();
-        if (consumeTrigger && !context.player().isCreative()) {
-            if (context.player().getMainHandItem().isStackable()) {
-                context.player().getMainHandItem().shrink(trigger.getCount());
-            } else {
-                context.player().getMainHandItem().hurtAndBreak(context.trigger().getMaxDamage(), context.player(), EquipmentSlot.MAINHAND);
-            }
-        }
+        if (consumeTrigger) context.shrink(trigger.getCount());
+        context.player().swing(context.hand(), true);
+        effect.apply((ServerLevel) context.level(), context.origin().above());
         return assemble(context, context.level().registryAccess());
     }
 
