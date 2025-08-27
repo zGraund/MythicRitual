@@ -23,9 +23,8 @@ public enum EffectHelper implements StringRepresentable {
 
             level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS);
 
-            // Spawn particle
             for (int i = 0; i < 10; i++) {
-                // Pick a random angle around the circle
+                // Random angle around the circle
                 double angle = random.nextDouble() * 2 * Math.PI;
 
                 // Radial velocity outward
@@ -33,16 +32,10 @@ public enum EffectHelper implements StringRepresentable {
                 double vx = Math.cos(angle) * speed;
                 double vz = Math.sin(angle) * speed;
 
-                // Upward velocity for "fountain" arch
+                // Upward velocity
                 double vy = 0.3 + random.nextDouble() * 0.2;
 
-                level.sendParticles(
-                        ParticleTypes.CRIT,
-                        pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
-                        2, // count per particle
-                        vx, vy, vz,
-                        0.5
-                );
+                level.sendParticles(ParticleTypes.CRIT, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 2, vx, vy, vz, 0.5);
             }
         }
     },
