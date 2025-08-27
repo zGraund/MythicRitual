@@ -19,7 +19,7 @@ import java.util.List;
 public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
     public static final MapCodec<RitualRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                     BlockState.CODEC.fieldOf("target").forGetter(RitualRecipe::target),
-                    ItemStack.CODEC.fieldOf("trigger").forGetter(RitualRecipe::trigger),
+                    ItemStack.CODEC.optionalFieldOf("trigger", ItemStack.EMPTY).forGetter(RitualRecipe::trigger),
                     RitualRecipeIngredient.CODEC.listOf().fieldOf("ingredients").forGetter(RitualRecipe::ingredients),
                     ItemStack.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
                     ResourceKey.codec(Registries.DIMENSION).listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
