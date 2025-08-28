@@ -59,7 +59,7 @@ public enum EffectHelper implements StringRepresentable {
     }
 
     public void apply(@NotNull ServerLevel level, BlockPos pos) {
-        level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS);
+        level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS);
     }
 
     @Override

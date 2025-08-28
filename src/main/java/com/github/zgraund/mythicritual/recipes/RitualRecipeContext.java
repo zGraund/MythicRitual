@@ -52,7 +52,7 @@ public final class RitualRecipeContext implements RecipeInput {
     public boolean accept(@NotNull RitualRecipe recipe) {
         return target.getBlock().defaultBlockState() == recipe.target()
                && trigger.is(recipe.trigger().getItem())
-               && trigger.getCount() >= (recipe.trigger().isStackable() ? recipe.trigger().getCount() : 1)
+               && (trigger.isDamageableItem() ? trigger.getMaxDamage() - trigger.getDamageValue() : trigger.getCount()) >= recipe.trigger().getCount()
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals));
     }
