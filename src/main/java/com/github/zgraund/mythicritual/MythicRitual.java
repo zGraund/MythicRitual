@@ -27,8 +27,6 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Mod(MythicRitual.MOD_ID)
@@ -54,12 +52,6 @@ public class MythicRitual {
         Level level = event.getLevel();
         if (level.isClientSide) return;
 
-        event.getEntity().sendSystemMessage(
-                Component.literal("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "]")
-                         .withStyle(ChatFormatting.GRAY)
-                         .append(Component.literal(" Click!").withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.ITALIC))
-        );
-
         BlockPos pos = event.getPos();
         BlockState blockState = level.getBlockState(pos);
         ItemStack itemStack = event.getItemStack();
@@ -67,11 +59,16 @@ public class MythicRitual {
         RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
         RitualRecipeContext input = new RitualRecipeContext(blockState, pos, itemStack, level, event.getEntity(), event.getHand());
 
-        Optional<RecipeHolder<RitualRecipe>> optional = recipes.getRecipeFor(type, input, level);
+        Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, input, level);
 
-        if (optional.isEmpty()) return;
+        if (recipe.isEmpty()) {
+            event.getEntity().sendSystemMessage(
+                    Component.literal("Recipe Failed!").withStyle(ChatFormatting.ITALIC)
+            );
+            return;
+        }
 
-        ItemStack result = optional.get().value().execute(input);
+        ItemStack result = recipe.get().value().execute(input);
         ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
         entity.setDeltaMovement(0, 0.20, 0);
         level.addFreshEntity(entity);
