@@ -1,8 +1,5 @@
 package com.github.zgraund.mythicritual.util;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,12 +19,7 @@ public final class EntityConsumer {
     public void consume() {
         switch (entity) {
             case ItemEntity i -> i.getItem().shrink(used);
-            case LivingEntity l -> {
-                if (used <= 0) return;
-                // AT to set the loot table of the mob ingredient to empty
-                l.getType().lootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse("minecraft:empty"));
-                l.hurt(new DamageSources(entity.level().registryAccess()).magic(), Float.MAX_VALUE);
-            }
+            case LivingEntity l -> {if (used > 0) l.hurt(new DamageSources(entity.level().registryAccess()).magic(), Float.MAX_VALUE);}
             default -> entity.kill();
         }
     }
