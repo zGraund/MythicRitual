@@ -10,6 +10,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -34,5 +35,10 @@ public record ItemRitualRecipeIngredient(
         if (!(entity instanceof ItemEntity itemEntity)) return false;
         ItemStack input = itemEntity.getItem();
         return input.is(BuiltInRegistries.ITEM.get(type)) && input.getCount() - used >= quantity;
+    }
+
+    @Contract(" -> new")
+    public @NotNull ItemStack asItemStack() {
+        return new ItemStack(BuiltInRegistries.ITEM.get(type), quantity);
     }
 }

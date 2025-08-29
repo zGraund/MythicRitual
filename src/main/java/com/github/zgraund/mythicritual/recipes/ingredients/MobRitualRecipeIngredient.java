@@ -7,6 +7,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,5 +30,10 @@ public record MobRitualRecipeIngredient(
         int used = entityConsumer.used();
         if (!(entity instanceof LivingEntity) || used >= 1) return false;
         return entity.isAlive() && BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
+    }
+
+    @Nonnull
+    public EntityType<?> asEntityType() {
+        return BuiltInRegistries.ENTITY_TYPE.get(type);
     }
 }
