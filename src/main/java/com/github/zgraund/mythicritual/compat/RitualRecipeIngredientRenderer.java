@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class RitualRecipeIngredientRenderer implements IIngredientRenderer<RitualRecipeIngredient> {
-    private final ResourceLocation sprite = ResourceLocation.fromNamespaceAndPath(MythicRitual.MOD_ID, "mob_soul2");
+    private final ResourceLocation sprite = ResourceLocation.fromNamespaceAndPath(MythicRitual.MOD_ID, "mob_soul_jei");
     private final long startTime = System.currentTimeMillis();
 
     @Override
