@@ -2,7 +2,8 @@ package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
+import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeIngredient;
+import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngredient;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
@@ -35,6 +37,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     private final IDrawable icon;
     private final int width = 162;
     private final int height = 144;
+    private final int ingListCol = 8;
 
     public RitualRecipeJEICategory(@NotNull IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, width, height);
@@ -42,26 +45,46 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, RitualRecipe recipe, IFocusGroup focuses) {
+    public void createRecipeExtras(@NotNull IRecipeExtrasBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
         Component text = Component.literal("Ritual Ingredients: ");
         builder.addText(text, 108, 20)
-               .setPosition(19, 54)
+               .setPosition(1, 54)
                .setTextAlignment(VerticalAlignment.CENTER);
+
+        builder.addRecipeArrow().setPosition(43, 18);
+        builder.addRecipeArrow().setPosition(95, 18);
 
         List<IRecipeSlotDrawable> inputSlots = builder.getRecipeSlots().getSlots(RecipeIngredientRole.INPUT);
         inputSlots.subList(0, 2).clear();
 
-        builder.addScrollGridWidget(inputSlots, 6, 3).setPosition(18, 72);
-//        builder.addScrollGridWidget(inputSlots, 7, 4).setPosition(18, 72);
+        builder.addScrollGridWidget(inputSlots, ingListCol, 4).setPosition(0, 72);
     }
 
     @Override
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addInputSlot().setPosition(19, 19).addItemStack(recipe.trigger());
-        builder.addInputSlot().setPosition(73, 19).addItemLike(recipe.target().getBlock().asItem());
-        builder.addOutputSlot().setPosition(127, 19).addItemStack(recipe.result());
-        for (RitualRecipeIngredient ingredient : recipe.ingredients()) {
-            builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE, ingredient);
+        builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStack(recipe.trigger());
+        builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.target().getBlock().asItem());
+        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
+
+        // FIXME: ???
+        List<ItemRitualRecipeIngredient> i = new ArrayList<>();
+        List<MobRitualRecipeIngredient> m = new ArrayList<>();
+        recipe.ingredients().forEach(a -> {
+            if (a instanceof MobRitualRecipeIngredient x) {
+                m.add(x);
+            } else if (a instanceof ItemRitualRecipeIngredient y) {i.add(y);}
+        });
+//        for (RitualRecipeIngredient ingredient : recipe.ingredients()) {
+//            builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE, ingredient);
+//        }
+        for (ItemRitualRecipeIngredient ing : i) {
+            builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE, ing);
+        }
+        for (int x = 0; x < (ingListCol - (i.size() % ingListCol)) % ingListCol; x++) {
+            builder.addInputSlot().addItemStack(ItemStack.EMPTY);
+        }
+        for (MobRitualRecipeIngredient ing : m) {
+            builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE, ing);
         }
     }
 

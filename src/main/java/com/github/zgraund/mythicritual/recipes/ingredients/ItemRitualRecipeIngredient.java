@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
@@ -37,8 +38,15 @@ public record ItemRitualRecipeIngredient(
         return input.is(BuiltInRegistries.ITEM.get(type)) && input.getCount() - used >= quantity;
     }
 
+    @Override
+    @Nonnull
+    public Component getDisplayName() {
+        return asItemStack().getHoverName();
+    }
+
     @Contract(" -> new")
-    public @NotNull ItemStack asItemStack() {
+    @Nonnull
+    public ItemStack asItemStack() {
         return new ItemStack(BuiltInRegistries.ITEM.get(type), quantity);
     }
 }

@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,6 +31,12 @@ public record MobRitualRecipeIngredient(
         int used = entityConsumer.used();
         if (!(entity instanceof LivingEntity) || used >= 1) return false;
         return entity.isAlive() && BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
+    }
+
+    @Override
+    @Nonnull
+    public Component getDisplayName() {
+        return asEntityType().getDescription();
     }
 
     @Nonnull

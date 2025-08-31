@@ -4,6 +4,7 @@ import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
@@ -28,6 +29,8 @@ public sealed interface RitualRecipeIngredient permits ItemRitualRecipeIngredien
     Boolean test(EntityConsumer entityConsumer);
 
     default int quantity() {return 1;}
+
+    Component getDisplayName();
 
     // TODO: BlockState as ingredient
     // Boolean test(BlockState block);
