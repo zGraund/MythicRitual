@@ -21,7 +21,7 @@ public record RitualRecipeIngredientHelper() implements IIngredientHelper<Ritual
     @Nonnull
     @Override
     public String getDisplayName(@NotNull RitualRecipeIngredient ingredient) {
-        return ingredient.type().getPath();
+        return ingredient.getDisplayName().getString();
     }
 
     @Nonnull

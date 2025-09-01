@@ -2,6 +2,7 @@ package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
+import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngredient;
 import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import mezz.jei.api.IModPlugin;
@@ -10,9 +11,11 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -44,9 +47,21 @@ public class JEIMythicRitualPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return;
+        RecipeManager recipeManager = level.getRecipeManager();
 
         List<RitualRecipe> ritualRecipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get()).stream().map(RecipeHolder::value).toList();
         registration.addRecipes(RitualRecipeJEICategory.RITUAL_RECIPE_JEI_TYPE, ritualRecipes);
+        ritualRecipes.forEach(r -> {
+            List<RitualRecipeIngredient> t = r.ingredients().stream().filter(i -> i instanceof MobRitualRecipeIngredient).toList();
+            if (!t.isEmpty()) {
+                registration.addIngredientInfo(
+                        t,
+                        RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE,
+                        Component.literal("This soul represent the actual Living Entity that must be sacrificed in the ritual.")
+                );
+            }
+        });
     }
 }

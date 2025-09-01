@@ -7,6 +7,7 @@ import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngred
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.placement.VerticalAlignment;
@@ -35,6 +36,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     private final IDrawable background;
     private final IDrawable icon;
+    private final IGuiHelper guiHelper;
     private final int width = 162;
     private final int height = 144;
     private final int ingListCol = 8;
@@ -42,6 +44,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public RitualRecipeJEICategory(@NotNull IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, width, height);
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ANVIL));
+        this.guiHelper = helper;
     }
 
     @Override
@@ -51,11 +54,8 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
                .setPosition(1, 54)
                .setTextAlignment(VerticalAlignment.CENTER);
 
-        builder.addRecipeArrow().setPosition(43, 18);
-        builder.addRecipeArrow().setPosition(95, 18);
-
         List<IRecipeSlotDrawable> inputSlots = builder.getRecipeSlots().getSlots(RecipeIngredientRole.INPUT);
-        inputSlots.subList(0, 2).clear();
+        inputSlots.subList(0, 1).clear();
 
         builder.addScrollGridWidget(inputSlots, ingListCol, 4).setPosition(0, 72);
     }
@@ -63,7 +63,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     @Override
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStack(recipe.trigger());
-        builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.target().getBlock().asItem());
+        builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.target().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
 
         // FIXME: ???
@@ -91,6 +91,9 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     @Override
     public void draw(@NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
 //        background.draw(guiGraphics);
+        IDrawableStatic arrow = guiHelper.getRecipeArrow();
+        arrow.draw(guiGraphics, 43, 18);
+        arrow.draw(guiGraphics, 95, 18);
     }
 
     @Override
