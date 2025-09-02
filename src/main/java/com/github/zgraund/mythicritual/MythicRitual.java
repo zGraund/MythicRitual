@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -27,6 +28,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @Mod(MythicRitual.MOD_ID)
@@ -43,6 +45,9 @@ public class MythicRitual {
 
         ModRecipes.register(modEventBus);
     }
+
+    @Nonnull
+    public static ResourceLocation ID(String path) {return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);}
 
     // FIXME: ugly in game debugging, to remove asap
     @SubscribeEvent // on the game event bus

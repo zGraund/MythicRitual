@@ -4,5 +4,5 @@ import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredien
 import mezz.jei.api.ingredients.IIngredientType;
 
 public record RitualRecipeJEIIngredient() {
-    public static final IIngredientType<RitualRecipeIngredient> RITUAL_RECIPE_INGREDIENT_JEI_TYPE = () -> RitualRecipeIngredient.class;
+    public static final IIngredientType<RitualRecipeIngredient> TYPE = () -> RitualRecipeIngredient.class;
 }

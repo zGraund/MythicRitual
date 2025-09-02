@@ -37,7 +37,7 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     @Override
     public void registerIngredients(@NotNull IModIngredientRegistration registration) {
         registration.register(
-                RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE,
+                RitualRecipeJEIIngredient.TYPE,
                 List.of(),
                 new RitualRecipeIngredientHelper(),
                 new RitualRecipeIngredientRenderer(),
@@ -49,16 +49,16 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
-        RecipeManager recipeManager = level.getRecipeManager();
 
+        RecipeManager recipeManager = level.getRecipeManager();
         List<RitualRecipe> ritualRecipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get()).stream().map(RecipeHolder::value).toList();
-        registration.addRecipes(RitualRecipeJEICategory.RITUAL_RECIPE_JEI_TYPE, ritualRecipes);
-        ritualRecipes.forEach(r -> {
-            List<RitualRecipeIngredient> t = r.ingredients().stream().filter(i -> i instanceof MobRitualRecipeIngredient).toList();
-            if (!t.isEmpty()) {
+        registration.addRecipes(RitualRecipeJEICategory.TYPE, ritualRecipes);
+        ritualRecipes.forEach(recipe -> {
+            List<RitualRecipeIngredient> ingredients = recipe.ingredients().stream().filter(MobRitualRecipeIngredient.class::isInstance).toList();
+            if (!ingredients.isEmpty()) {
                 registration.addIngredientInfo(
-                        t,
-                        RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE,
+                        ingredients,
+                        RitualRecipeJEIIngredient.TYPE,
                         Component.literal("This soul represent the actual Living Entity that must be sacrificed in the ritual.")
                 );
             }

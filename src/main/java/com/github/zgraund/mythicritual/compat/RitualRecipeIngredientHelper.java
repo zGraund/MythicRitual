@@ -15,7 +15,7 @@ public record RitualRecipeIngredientHelper() implements IIngredientHelper<Ritual
     @Override
     @Nonnull
     public IIngredientType<RitualRecipeIngredient> getIngredientType() {
-        return RitualRecipeJEIIngredient.RITUAL_RECIPE_INGREDIENT_JEI_TYPE;
+        return RitualRecipeJEIIngredient.TYPE;
     }
 
     @Nonnull
