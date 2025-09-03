@@ -47,6 +47,8 @@ public record ItemRitualRecipeIngredient(
     @Contract(" -> new")
     @Nonnull
     public ItemStack asItemStack() {
-        return new ItemStack(BuiltInRegistries.ITEM.get(type), quantity);
+        ItemStack item = new ItemStack(BuiltInRegistries.ITEM.get(type), quantity);
+        if (item.isDamageableItem()) item.setCount(1);
+        return item;
     }
 }

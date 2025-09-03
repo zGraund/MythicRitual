@@ -1,12 +1,14 @@
 package com.github.zgraund.mythicritual.recipes;
 
-import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.github.zgraund.mythicritual.util.RotationUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +18,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -35,44 +36,20 @@ public record RitualRecipe(
 ) implements Recipe<RitualRecipeContext> {
     @Override
     public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
-        Logger l = MythicRitual.LOGGER;
         if (!context.accept(this)) return false;
         HashMap<BlockPos, List<EntityConsumer>> inputEntities = context.entitiesByPosition(ingredients);
         if (inputEntities.isEmpty()) return false;
-
-        l.debug("list of recipe ingredients:\n{}\nlist of ingredients entities:\n{}\npositions: {}, total entities: {}", ingredients, inputEntities, inputEntities.size(),
-                inputEntities
-                        .values()
-                        .stream()
-                        .mapToInt(List::size)
-                        .sum());
-
         for (RitualRecipeIngredient ingredient : ingredients) {
             BlockPos expected = RotationUtils.relativeTo(context.origin(), ingredient.offset(), context.player().getDirection());
-
             List<EntityConsumer> entitiesAt = inputEntities.get(expected);
-            if (entitiesAt == null || entitiesAt.isEmpty()) {
-                l.debug("position {} missing or empty", expected);
-                return false;
-            }
-
-            Optional<EntityConsumer> match = entitiesAt.stream()
-                                                       .peek(e -> l.debug("testing ingredient {} with input {}", ingredient, e.entity()))
-                                                       .filter(ingredient::test)
-                                                       .findFirst();
-
+            if (entitiesAt == null || entitiesAt.isEmpty()) return false;
+            Optional<EntityConsumer> match = entitiesAt.stream().filter(ingredient::test).findFirst();
             if (match.isPresent()) {
                 match.get().increment(ingredient.quantity());
-                l.debug("test passed incrementing entity: {} by {}", match.get().entity(), ingredient.quantity());
                 continue;
             }
-
-            l.debug("inner loop finished no full match");
             return false;
         }
-
-        l.debug("outer loop finished full match");
-
         context.commit(inputEntities);
         return true;
     }
@@ -93,14 +70,29 @@ public record RitualRecipe(
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return true;
-    }
+    public boolean canCraftInDimensions(int width, int height) {return true;}
 
     @Override
     @Nonnull
-    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
-        return this.result;
+    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {return this.result;}
+
+    @Nonnull
+    public Component dimensionsDescription() {
+        MutableComponent prefix = Component.literal("Dimensions: ").withStyle(ChatFormatting.GRAY);
+        String dim = dimensions.isEmpty() ? "All" : dimensions.stream().map(ResourceKey::location).toList().toString();
+        return prefix.append(Component.literal(dim).withStyle(ChatFormatting.GREEN));
+    }
+
+    @Nonnull
+    public Component skyAccessDescription() {
+        MutableComponent prefix = Component.literal("Require access to sky: ").withStyle(ChatFormatting.GRAY);
+        return prefix.append(Component.literal(Boolean.toString(needSky)).withStyle(needSky ? ChatFormatting.GREEN : ChatFormatting.RED));
+    }
+
+    @Nonnull
+    public Optional<Component> triggerItemTooltip() {
+        if (!consumeTrigger) return Optional.empty();
+        return Optional.of(Component.literal("The item needs at least " + trigger.getCount() + " durability!").withStyle(ChatFormatting.YELLOW));
     }
 
     @Nonnull

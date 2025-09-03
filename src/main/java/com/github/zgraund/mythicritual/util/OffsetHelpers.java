@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OffsetHelper {
+public class OffsetHelpers {
     @Nonnull
     public static MutableComponent asComponent(@NotNull Vec3i offset) {
         List<String> out = new ArrayList<>();

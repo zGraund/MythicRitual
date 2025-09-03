@@ -4,7 +4,8 @@ import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeIngredient;
 import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngredient;
-import com.github.zgraund.mythicritual.util.AnimatedSpriteRenderer;
+import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
+import com.mojang.datafixers.util.Either;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -22,7 +23,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -32,18 +32,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
     public static final ResourceLocation TEXTURE = MythicRitual.ID("textures/gui/gui_test_2.png");
     public static final RecipeType<RitualRecipe> TYPE = new RecipeType<>(UID, RitualRecipe.class);
 
-    private final int hammerX = 73;
-    private final int hammerY = 1;
+    private final int hammerX = 38;
+    private final int hammerY = 4;
     private final AnimatedSpriteRenderer consume = new AnimatedSpriteRenderer(
-            MythicRitual.ID("consume_trigger"), 50, 2, 16, 48, 16, 16);
+            MythicRitual.ID("smashing_hammer"), 3, 16, 32, 544, 32, 32);
     private final AnimatedSpriteRenderer save = new AnimatedSpriteRenderer(
-            MythicRitual.ID("consume_trigger"), 50, 1, 16, 48, 16, 16);
+            MythicRitual.ID("smashing_hammer"), 3, 10, 32, 544, 32, 32);
 
     private final int infoIconX = 145;
     private final int infoIconY = 57;
@@ -78,7 +79,13 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     @Override
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStack(recipe.trigger());
+        builder.addInputSlot(19, 19)
+               .setStandardSlotBackground()
+               .addItemStack(recipe.trigger())
+               .addRichTooltipCallback((recipeSlotView, tooltip) -> {
+                   Optional<Component> tt = recipe.triggerItemTooltip();
+                   tt.ifPresent(component -> tooltip.getLines().addAll(2, List.of(Either.left(component), Either.left(Component.empty()))));
+               });
         builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.target().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
 
@@ -107,7 +114,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public void draw(@NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
 //        background.draw(guiGraphics);
         IDrawableStatic arrow = guiHelper.getRecipeArrow();
-        arrow.draw(guiGraphics, 43, 18);
+//        arrow.draw(guiGraphics, 43, 18);
         arrow.draw(guiGraphics, 95, 18);
         infoIcon.draw(guiGraphics, infoIconX, infoIconY);
         if (recipe.consumeTrigger()) {
@@ -119,21 +126,10 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     @Override
     public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        if (infoIconX <= mouseX && infoIconX + 16 >= mouseX && infoIconY <= mouseY && infoIconY + 16 >= mouseY) {
-            tooltip.addAll(List.of(
-                    Component
-                            .literal("Ritual need sky access: ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(Component.literal(Boolean.toString(recipe.needSky())).withStyle(recipe.needSky() ? ChatFormatting.GREEN : ChatFormatting.RED)),
-                    Component
-                            .literal("Dimensions: ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(Component
-                                    .literal((recipe.dimensions().isEmpty() ? "All" : recipe.dimensions().stream().map(ResourceKey::location).toList().toString()))
-                                    .withStyle(ChatFormatting.GREEN))
-            ));
+        if (infoIconX <= mouseX && infoIconX + infoIcon.getWidth() >= mouseX && infoIconY <= mouseY && infoIconY + infoIcon.getHeight() >= mouseY) {
+            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription()));
         }
-        if (consume.isHover(hammerX, hammerY, mouseX, mouseY)) {
+        if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
             if (recipe.consumeTrigger()) {
                 tooltip.add(Component.literal("The trigger item will be consumed or take damage!").withStyle(ChatFormatting.RED));
             } else {

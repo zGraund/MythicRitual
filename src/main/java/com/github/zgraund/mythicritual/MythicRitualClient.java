@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual;
 
-import com.github.zgraund.mythicritual.compat.RitualRecipeIngredientRenderer;
+import com.github.zgraund.mythicritual.render.EntityPreviewTooltip;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -24,6 +24,6 @@ public class MythicRitualClient {
 
     @SubscribeEvent
     static void tooltips(@NotNull RegisterClientTooltipComponentFactoriesEvent event) {
-        event.register(RitualRecipeIngredientRenderer.EntityPreviewTooltip.class, Function.identity());
+        event.register(EntityPreviewTooltip.class, Function.identity());
     }
 }
