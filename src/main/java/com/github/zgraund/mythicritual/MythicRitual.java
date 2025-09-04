@@ -4,9 +4,7 @@ import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.RitualRecipeContext;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.mojang.logging.LogUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -66,12 +64,7 @@ public class MythicRitual {
 
         Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, input, level);
 
-        if (recipe.isEmpty()) {
-            event.getEntity().sendSystemMessage(
-                    Component.literal("Recipe Failed!").withStyle(ChatFormatting.ITALIC)
-            );
-            return;
-        }
+        if (recipe.isEmpty()) return;
 
         ItemStack result = recipe.get().value().execute(input);
         ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);

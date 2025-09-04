@@ -25,7 +25,7 @@ public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
                     ResourceKey.codec(Registries.DIMENSION).listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
                     EffectHelper.CODEC.optionalFieldOf("effect", EffectHelper.NONE).forGetter(RitualRecipe::effect),
                     Codec.BOOL.optionalFieldOf("needSky", false).forGetter(RitualRecipe::needSky),
-                    Codec.BOOL.optionalFieldOf("consumeTrigger", false).forGetter(RitualRecipe::consumeTrigger)
+                    ActionOnCraft.CODEC.optionalFieldOf("consumeTrigger", ActionOnCraft.NONE).forGetter(RitualRecipe::consumeOnUse)
             ).apply(inst, RitualRecipe::new)
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, RitualRecipe> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());

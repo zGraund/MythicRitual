@@ -32,7 +32,7 @@ public record RitualRecipe(
         List<ResourceKey<Level>> dimensions,
         EffectHelper effect,
         boolean needSky,
-        boolean consumeTrigger
+        ActionOnCraft consumeOnUse
 ) implements Recipe<RitualRecipeContext> {
     @Override
     public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
@@ -56,14 +56,12 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {
-        return this.getResultItem(registries).copy();
-    }
+    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {return this.result.copy();}
 
     @Nonnull
     public ItemStack execute(@NotNull RitualRecipeContext context) {
         context.consume();
-        if (consumeTrigger) context.shrink(trigger.getCount());
+        context.shrink(consumeOnUse, trigger.getCount());
         context.player().swing(context.hand(), true);
         effect.apply((ServerLevel) context.level(), context.origin().above());
         return assemble(context, context.level().registryAccess());
@@ -91,17 +89,17 @@ public record RitualRecipe(
 
     @Nonnull
     public Optional<Component> triggerItemTooltip() {
-        if (!consumeTrigger) return Optional.empty();
-        return Optional.of(Component.literal("The item needs at least " + trigger.getCount() + " durability!").withStyle(ChatFormatting.YELLOW));
+        if (!trigger.isDamageableItem()) return Optional.empty();
+        return switch (consumeOnUse) {
+            case NONE -> Optional.empty();
+            case CONSUME -> Optional.of(Component.literal("The durability will be reduced!").withStyle(ChatFormatting.YELLOW));
+            case DESTROY -> Optional.of(Component.literal("The item will be destroyed!").withStyle(ChatFormatting.RED));
+        };
     }
 
     @Nonnull
-    public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.RITUAL_RECIPE_SERIALIZER.get();
-    }
+    public RecipeSerializer<?> getSerializer() {return ModRecipes.RITUAL_RECIPE_SERIALIZER.get();}
 
     @Nonnull
-    public RecipeType<?> getType() {
-        return ModRecipes.RITUAL_RECIPE_TYPE.get();
-    }
+    public RecipeType<?> getType() {return ModRecipes.RITUAL_RECIPE_TYPE.get();}
 }

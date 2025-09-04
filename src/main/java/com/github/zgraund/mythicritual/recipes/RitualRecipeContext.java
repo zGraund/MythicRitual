@@ -52,7 +52,8 @@ public final class RitualRecipeContext implements RecipeInput {
     public boolean accept(@NotNull RitualRecipe recipe) {
         return target.getBlock().defaultBlockState() == recipe.target()
                && trigger.is(recipe.trigger().getItem())
-               && (trigger.isDamageableItem() ? trigger.getMaxDamage() - trigger.getDamageValue() : trigger.getCount()) >= recipe.trigger().getCount()
+               && (recipe.consumeOnUse() != ActionOnCraft.DESTROY || trigger.getDamageValue() == 0)
+               && trigger.getCount() >= recipe.trigger().getCount()
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals));
     }
@@ -61,14 +62,20 @@ public final class RitualRecipeContext implements RecipeInput {
         validatedInput.values().stream().flatMap(List::stream).forEach(EntityConsumer::consume);
     }
 
-    public void shrink(int quantity) {
+    public void shrink(ActionOnCraft action, int quantity) {
         if (player.isCreative()) return;
-        ItemStack item = player.getItemInHand(hand);
-        if (item.isDamageableItem()) {
-            item.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
-        } else {
-            item.shrink(quantity);
+        switch (action) {
+            case DESTROY -> {
+                trigger.setDamageValue(trigger.getMaxDamage());
+                damageOrShrink(trigger.getMaxDamage());
+            }
+            case CONSUME -> damageOrShrink(quantity);
         }
+    }
+
+    private void damageOrShrink(int quantity) {
+        if (trigger.isDamageableItem()) trigger.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
+        else trigger.shrink(quantity);
     }
 
     public void commit(HashMap<BlockPos, List<EntityConsumer>> entities) {

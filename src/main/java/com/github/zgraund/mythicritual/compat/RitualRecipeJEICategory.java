@@ -1,6 +1,7 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
+import com.github.zgraund.mythicritual.recipes.ActionOnCraft;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeIngredient;
 import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngredient;
@@ -117,7 +118,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 //        arrow.draw(guiGraphics, 43, 18);
         arrow.draw(guiGraphics, 95, 18);
         infoIcon.draw(guiGraphics, infoIconX, infoIconY);
-        if (recipe.consumeTrigger()) {
+        if (recipe.consumeOnUse() != ActionOnCraft.NONE) {
             consume.draw(guiGraphics, hammerX, hammerY);
         } else {
             save.draw(guiGraphics, hammerX, hammerY);
@@ -130,7 +131,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
             tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription()));
         }
         if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
-            if (recipe.consumeTrigger()) {
+            if (recipe.consumeOnUse() != ActionOnCraft.NONE) {
                 tooltip.add(Component.literal("The trigger item will be consumed or take damage!").withStyle(ChatFormatting.RED));
             } else {
                 tooltip.add(Component.literal("The trigger item is safe!").withStyle(ChatFormatting.GREEN));
