@@ -1,8 +1,8 @@
 package com.github.zgraund.mythicritual.recipes;
 
+import com.github.zgraund.mythicritual.registries.ModParticles;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,20 +23,23 @@ public enum EffectHelper implements StringRepresentable {
 
             level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS);
 
-            for (int i = 0; i < 10; i++) {
-                // Random angle around the circle
-                double angle = random.nextDouble() * 2 * Math.PI;
+//            for (int i = 0; i < 10; i++) {
+            // Random angle around the circle
+//                double angle = random.nextDouble() * 2 * Math.PI;
 
-                // Radial velocity outward
-                double speed = 0.15 + random.nextDouble() * 0.2;
-                double vx = Math.cos(angle) * speed;
-                double vz = Math.sin(angle) * speed;
+            // Radial velocity outward
+//                double speed = 0.15 + random.nextDouble() * 0.2;
+//                double vx = Math.cos(angle) * speed;
+//                double vz = Math.sin(angle) * speed;
 
-                // Upward velocity
-                double vy = 0.3 + random.nextDouble() * 0.2;
+            // Upward velocity
+//                double vy = 0.3 + random.nextDouble() * 0.2;
+            double vx = 0;
+            double vy = 0.5;
+            double vz = 0;
 
-                level.sendParticles(ParticleTypes.CRIT, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 2, vx, vy, vz, 0.5);
-            }
+            level.sendParticles(ModParticles.RITUAL_PARTICLES.get(), pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 1, vx, vy, vz, 0.5);
+//            }
         }
     },
     LIGHTNING("lightning") {

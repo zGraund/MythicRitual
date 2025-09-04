@@ -1,5 +1,7 @@
 package com.github.zgraund.mythicritual;
 
+import com.github.zgraund.mythicritual.particle.RitualParticle;
+import com.github.zgraund.mythicritual.registries.ModParticles;
 import com.github.zgraund.mythicritual.render.EntityPreviewTooltip;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -8,6 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -23,7 +26,12 @@ public class MythicRitualClient {
     static void onClientSetup(FMLClientSetupEvent event) {}
 
     @SubscribeEvent
-    static void tooltips(@NotNull RegisterClientTooltipComponentFactoriesEvent event) {
+    static void registerClientTooltipFactories(@NotNull RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(EntityPreviewTooltip.class, Function.identity());
+    }
+
+    @SubscribeEvent
+    static void registerParticleFactory(@NotNull RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticles.RITUAL_PARTICLES.get(), RitualParticle.Provider::new);
     }
 }

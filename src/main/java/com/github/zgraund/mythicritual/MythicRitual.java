@@ -2,6 +2,7 @@ package com.github.zgraund.mythicritual;
 
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.RitualRecipeContext;
+import com.github.zgraund.mythicritual.registries.ModParticles;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -42,6 +43,7 @@ public class MythicRitual {
         NeoForge.EVENT_BUS.register(this);
 
         ModRecipes.register(modEventBus);
+        ModParticles.register(modEventBus);
     }
 
     @Nonnull

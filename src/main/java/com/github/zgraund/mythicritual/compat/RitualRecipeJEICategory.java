@@ -90,23 +90,19 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
         builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.target().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
 
-        // FIXME: ???
-        List<ItemRitualRecipeIngredient> i = new ArrayList<>();
-        List<MobRitualRecipeIngredient> m = new ArrayList<>();
+        List<ItemRitualRecipeIngredient> items = new ArrayList<>();
+        List<MobRitualRecipeIngredient> mobs = new ArrayList<>();
         recipe.ingredients().forEach(a -> {
-            if (a instanceof MobRitualRecipeIngredient x) {
-                m.add(x);
-            } else if (a instanceof ItemRitualRecipeIngredient y) {
-                i.add(y);
-            }
+            if (a instanceof MobRitualRecipeIngredient x) mobs.add(x);
+            else if (a instanceof ItemRitualRecipeIngredient y) items.add(y);
         });
-        for (ItemRitualRecipeIngredient ing : i) {
+        for (ItemRitualRecipeIngredient ing : items) {
             builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
         }
-        for (int x = 0; x < (ingListCol - (i.size() % ingListCol)) % ingListCol; x++) {
+        for (int x = 0; x < (ingListCol - (items.size() % ingListCol)) % ingListCol; x++) {
             builder.addInputSlot().addItemStack(ItemStack.EMPTY);
         }
-        for (MobRitualRecipeIngredient ing : m) {
+        for (MobRitualRecipeIngredient ing : mobs) {
             builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
         }
     }
