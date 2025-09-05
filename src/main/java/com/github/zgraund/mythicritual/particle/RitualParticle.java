@@ -16,9 +16,9 @@ public class RitualParticle extends TextureSheetParticle {
         this.xd = xSpeed;
         this.yd = ySpeed;
         this.zd = zSpeed;
-        this.gravity = 0.04f;
-        this.lifetime = 30;
-        this.setSize(16, 16);
+        this.gravity = 1.0f;
+        this.lifetime = 20;
+        this.scale(0.5f);
     }
 
     @Override

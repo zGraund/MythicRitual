@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 @JeiPlugin
@@ -37,9 +38,21 @@ public class JEIMythicRitualPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(@NotNull IModIngredientRegistration registration) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return;
+        RecipeManager recipeManager = level.getRecipeManager();
+        List<RecipeHolder<RitualRecipe>> recipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get());
+
+        List<RitualRecipeOffering> recipeOfferings = recipes
+                .stream()
+                .map(RecipeHolder::value)
+                .flatMap(recipe -> Stream.concat(recipe.offerings().stream(), Stream.of(recipe.result())))
+                .filter(MobRitualRecipeOffering.class::isInstance)
+                .toList();
+
         registration.register(
                 RitualRecipeJEIIngredient.TYPE,
-                List.of(),
+                recipeOfferings,
                 new RitualRecipeIngredientHelper(),
                 new RitualRecipeIngredientRenderer(),
                 RitualRecipeOffering.CODEC

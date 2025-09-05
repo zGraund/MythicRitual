@@ -90,6 +90,8 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
         builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
 //        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addIngredient(RitualRecipeJEIIngredient.TYPE, recipe.result());
+        if (recipe.result() instanceof ItemRitualRecipeOffering i)
+            builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredient(VanillaTypes.ITEM_STACK, i.asItemStack());
 
         List<ItemRitualRecipeOffering> items = new ArrayList<>();
         List<MobRitualRecipeOffering> mobs = new ArrayList<>();
@@ -99,6 +101,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
         });
         for (ItemRitualRecipeOffering ing : items) {
             builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
+            builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredient(VanillaTypes.ITEM_STACK, ing.asItemStack());
         }
         for (int x = 0; x < (ingListCol - (items.size() % ingListCol)) % ingListCol; x++) {
             builder.addInputSlot().addItemStack(ItemStack.EMPTY);
