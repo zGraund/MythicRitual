@@ -35,10 +35,10 @@ public enum EffectHelper implements StringRepresentable {
             // Upward velocity
 //                double vy = 0.3 + random.nextDouble() * 0.2;
             double vx = 0;
-            double vy = 0.5;
+            double vy = 1;
             double vz = 0;
 
-            level.sendParticles(ModParticles.RITUAL_PARTICLES.get(), pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 1, vx, vy, vz, 0.5);
+            level.sendParticles(ModParticles.RITUAL_PARTICLES.get(), pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 1, vx, vy, vz, 0);
 //            }
         }
     },

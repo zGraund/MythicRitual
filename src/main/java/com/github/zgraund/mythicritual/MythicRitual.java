@@ -55,7 +55,7 @@ public class MythicRitual {
         if (event.getHand() == InteractionHand.OFF_HAND) return;
 
         Level level = event.getLevel();
-        if (level.isClientSide) return;
+//        if (level.isClientSide) return;
 
         BlockPos pos = event.getPos();
         BlockState blockState = level.getBlockState(pos);
@@ -67,11 +67,12 @@ public class MythicRitual {
         Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, input, level);
 
         if (recipe.isEmpty()) return;
-
-        ItemStack result = recipe.get().value().execute(input);
-        ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
-        entity.setDeltaMovement(0, 0.20, 0);
-        level.addFreshEntity(entity);
+        if (!level.isClientSide) {
+            ItemStack result = recipe.get().value().execute(input);
+            ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
+            entity.setDeltaMovement(0, 0.20, 0);
+            level.addFreshEntity(entity);
+        }
 
         event.setCancellationResult(InteractionResult.SUCCESS);
         event.setCanceled(true);

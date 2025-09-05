@@ -2,8 +2,8 @@ package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngredient;
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
+import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -41,7 +41,7 @@ public class JEIMythicRitualPlugin implements IModPlugin {
                 List.of(),
                 new RitualRecipeIngredientHelper(),
                 new RitualRecipeIngredientRenderer(),
-                RitualRecipeIngredient.CODEC
+                RitualRecipeOffering.CODEC
         );
     }
 
@@ -54,12 +54,12 @@ public class JEIMythicRitualPlugin implements IModPlugin {
         List<RitualRecipe> ritualRecipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get()).stream().map(RecipeHolder::value).toList();
         registration.addRecipes(RitualRecipeJEICategory.TYPE, ritualRecipes);
         ritualRecipes.forEach(recipe -> {
-            List<RitualRecipeIngredient> ingredients = recipe.ingredients().stream().filter(MobRitualRecipeIngredient.class::isInstance).toList();
+            List<RitualRecipeOffering> ingredients = recipe.offerings().stream().filter(MobRitualRecipeOffering.class::isInstance).toList();
             if (!ingredients.isEmpty()) {
                 registration.addIngredientInfo(
                         ingredients,
                         RitualRecipeJEIIngredient.TYPE,
-                        Component.literal("This soul represent the actual Living Entity that must be sacrificed in the ritual.")
+                        Component.literal("This soul represent the Living Entity that must be sacrificed in the ritual.")
                 );
             }
         });

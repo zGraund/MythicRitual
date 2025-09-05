@@ -3,6 +3,7 @@ package com.github.zgraund.mythicritual.recipes.ingredients;
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -10,18 +11,24 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
-public record MobRitualRecipeIngredient(
+public record MobRitualRecipeOffering(
         ResourceLocation type,
         Vec3i offset
-) implements RitualRecipeIngredient {
-    public static final MapCodec<MobRitualRecipeIngredient> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                    ResourceLocation.CODEC.fieldOf("type").forGetter(MobRitualRecipeIngredient::type),
-                    Vec3i.CODEC.optionalFieldOf("pos", new Vec3i(0, 1, 0)).forGetter(MobRitualRecipeIngredient::offset)
-            ).apply(inst, MobRitualRecipeIngredient::new)
+) implements RitualRecipeOffering {
+    public static final MapCodec<MobRitualRecipeOffering> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                    ResourceLocation.CODEC.fieldOf("type").forGetter(MobRitualRecipeOffering::type),
+                    Vec3i.CODEC.optionalFieldOf("pos", new Vec3i(0, 1, 0)).forGetter(MobRitualRecipeOffering::offset)
+            ).apply(inst, MobRitualRecipeOffering::new)
     );
 
     @Override
@@ -37,6 +44,15 @@ public record MobRitualRecipeIngredient(
     @Nonnull
     public Component getDisplayName() {
         return asEntityType().getDescription();
+    }
+
+    @Override
+    @Nonnull
+    public List<Component> getTooltipLines(Item.TooltipContext tooltipContext, @Nullable Player player, @NotNull TooltipFlag tooltipFlag) {
+        List<Component> lines = new ArrayList<>(2);
+        lines.add(this.getDisplayName());
+        if (tooltipFlag.isAdvanced()) lines.add(Component.literal(this.type.toString()).withStyle(ChatFormatting.DARK_GRAY));
+        return lines;
     }
 
     @Nonnull

@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.Locale;
 
-public enum ActionOnCraft implements StringRepresentable {
+public enum ActionOnTransmute implements StringRepresentable {
     NONE("none"),
     CONSUME("consume"),
     DESTROY("destroy");
 
-    public static final Codec<ActionOnCraft> CODEC = StringRepresentable.fromEnum(ActionOnCraft::values);
+    public static final Codec<ActionOnTransmute> CODEC = StringRepresentable.fromEnum(ActionOnTransmute::values);
     private final String action;
 
-    ActionOnCraft(@NotNull String action) {this.action = action.toLowerCase(Locale.ROOT);}
+    ActionOnTransmute(@NotNull String action) {this.action = action.toLowerCase(Locale.ROOT);}
 
     @Override
     @Nonnull

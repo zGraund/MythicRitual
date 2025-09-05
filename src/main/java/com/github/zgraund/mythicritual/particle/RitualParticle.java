@@ -3,10 +3,13 @@ package com.github.zgraund.mythicritual.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
+@OnlyIn(Dist.CLIENT)
 public class RitualParticle extends TextureSheetParticle {
     protected RitualParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
@@ -15,6 +18,7 @@ public class RitualParticle extends TextureSheetParticle {
         this.zd = zSpeed;
         this.gravity = 0.04f;
         this.lifetime = 30;
+        this.setSize(16, 16);
     }
 
     @Override
@@ -23,6 +27,7 @@ public class RitualParticle extends TextureSheetParticle {
         return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public record Provider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
         @Override
         @Nonnull

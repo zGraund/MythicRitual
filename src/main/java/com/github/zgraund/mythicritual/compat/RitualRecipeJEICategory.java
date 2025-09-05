@@ -1,10 +1,10 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.ActionOnCraft;
+import com.github.zgraund.mythicritual.recipes.ActionOnTransmute;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeIngredient;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeIngredient;
+import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.constants.VanillaTypes;
@@ -69,7 +69,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     @Override
     public void createRecipeExtras(@NotNull IRecipeExtrasBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
-        Component text = Component.literal("Ritual Ingredients: ");
+        Component text = Component.literal("Ritual Offerings: ");
         builder.addText(text, 108, 20)
                .setPosition(1, 54)
                .setTextAlignment(VerticalAlignment.CENTER);
@@ -82,27 +82,27 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addInputSlot(19, 19)
                .setStandardSlotBackground()
-               .addItemStack(recipe.trigger())
+               .addItemStack(recipe.catalyst())
                .addRichTooltipCallback((recipeSlotView, tooltip) -> {
-                   Optional<Component> tt = recipe.triggerItemTooltip();
+                   Optional<Component> tt = recipe.catalystDescription();
                    tt.ifPresent(component -> tooltip.getLines().addAll(2, List.of(Either.left(component), Either.left(Component.empty()))));
                });
-        builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.target().getBlock().asItem());
+        builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
 
-        List<ItemRitualRecipeIngredient> items = new ArrayList<>();
-        List<MobRitualRecipeIngredient> mobs = new ArrayList<>();
-        recipe.ingredients().forEach(a -> {
-            if (a instanceof MobRitualRecipeIngredient x) mobs.add(x);
-            else if (a instanceof ItemRitualRecipeIngredient y) items.add(y);
+        List<ItemRitualRecipeOffering> items = new ArrayList<>();
+        List<MobRitualRecipeOffering> mobs = new ArrayList<>();
+        recipe.offerings().forEach(a -> {
+            if (a instanceof MobRitualRecipeOffering x) mobs.add(x);
+            else if (a instanceof ItemRitualRecipeOffering y) items.add(y);
         });
-        for (ItemRitualRecipeIngredient ing : items) {
+        for (ItemRitualRecipeOffering ing : items) {
             builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
         }
         for (int x = 0; x < (ingListCol - (items.size() % ingListCol)) % ingListCol; x++) {
             builder.addInputSlot().addItemStack(ItemStack.EMPTY);
         }
-        for (MobRitualRecipeIngredient ing : mobs) {
+        for (MobRitualRecipeOffering ing : mobs) {
             builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
         }
     }
@@ -114,7 +114,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 //        arrow.draw(guiGraphics, 43, 18);
         arrow.draw(guiGraphics, 95, 18);
         infoIcon.draw(guiGraphics, infoIconX, infoIconY);
-        if (recipe.consumeOnUse() != ActionOnCraft.NONE) {
+        if (recipe.onTransmute() != ActionOnTransmute.NONE) {
             consume.draw(guiGraphics, hammerX, hammerY);
         } else {
             save.draw(guiGraphics, hammerX, hammerY);
@@ -124,13 +124,13 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     @Override
     public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (infoIconX <= mouseX && infoIconX + infoIcon.getWidth() >= mouseX && infoIconY <= mouseY && infoIconY + infoIcon.getHeight() >= mouseY) {
-            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription()));
+            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
         }
         if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
-            if (recipe.consumeOnUse() != ActionOnCraft.NONE) {
-                tooltip.add(Component.literal("The trigger item will be consumed or take damage!").withStyle(ChatFormatting.RED));
+            if (recipe.onTransmute() != ActionOnTransmute.NONE) {
+                tooltip.add(Component.literal("The catalyst will be consumed or damaged!").withStyle(ChatFormatting.RED));
             } else {
-                tooltip.add(Component.literal("The trigger item is safe!").withStyle(ChatFormatting.GREEN));
+                tooltip.add(Component.literal("The catalyst is safe!").withStyle(ChatFormatting.GREEN));
             }
         }
     }
