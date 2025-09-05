@@ -2,14 +2,17 @@ package com.github.zgraund.mythicritual;
 
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.RitualRecipeContext;
+import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.registries.ModParticles;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -55,7 +58,6 @@ public class MythicRitual {
         if (event.getHand() == InteractionHand.OFF_HAND) return;
 
         Level level = event.getLevel();
-//        if (level.isClientSide) return;
 
         BlockPos pos = event.getPos();
         BlockState blockState = level.getBlockState(pos);
@@ -68,10 +70,25 @@ public class MythicRitual {
 
         if (recipe.isEmpty()) return;
         if (!level.isClientSide) {
-            ItemStack result = recipe.get().value().execute(input);
-            ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
+//            ItemStack result = recipe.get().value().execute(input);
+            RitualRecipeOffering result = recipe.get().value().execute(input);
+//            ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
+//            for (int i = 0; i < result.quantity(); i++) {
+            Entity entity = result.asEntity(level);
+            if (entity == null) return;
+            entity.setPos(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
             entity.setDeltaMovement(0, 0.20, 0);
+            if (entity instanceof LivingEntity l) {
+                Direction dir = event.getEntity().getDirection();
+                Direction dir2 = dir.getOpposite();
+
+                entity.setYRot(dir2.toYRot());
+                entity.setYBodyRot(dir2.toYRot());
+                entity.setYHeadRot(dir2.toYRot());
+                entity.setDeltaMovement(0, 0, 0);
+            }
             level.addFreshEntity(entity);
+//            }
         }
 
         event.setCancellationResult(InteractionResult.SUCCESS);

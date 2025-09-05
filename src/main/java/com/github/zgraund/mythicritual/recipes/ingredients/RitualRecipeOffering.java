@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,6 +36,11 @@ public sealed interface RitualRecipeOffering permits ItemRitualRecipeOffering, M
     Boolean test(EntityConsumer entityConsumer);
 
     default int quantity() {return 1;}
+
+    RitualRecipeOffering copy();
+
+    @Nullable
+    Entity asEntity(Level level);
 
     Component getDisplayName();
 

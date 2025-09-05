@@ -14,6 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +40,17 @@ public record MobRitualRecipeOffering(
         int used = entityConsumer.used();
         if (!(entity instanceof LivingEntity) || used >= 1) return false;
         return entity.isAlive() && BuiltInRegistries.ENTITY_TYPE.get(this.type) == entity.getType();
+    }
+
+    @Contract(" -> new")
+    @Override
+    public @NotNull RitualRecipeOffering copy() {
+        return new MobRitualRecipeOffering(this.type, this.offset);
+    }
+
+    @Override
+    public Entity asEntity(Level level) {
+        return this.asEntityType().create(level);
     }
 
     @Override

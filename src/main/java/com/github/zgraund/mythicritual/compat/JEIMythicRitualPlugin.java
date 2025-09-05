@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @JeiPlugin
 public class JEIMythicRitualPlugin implements IModPlugin {
     @Override

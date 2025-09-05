@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 
 public record RitualRecipeIngredientHelper() implements IIngredientHelper<RitualRecipeOffering> {
-
     @Override
     @Nonnull
     public IIngredientType<RitualRecipeOffering> getIngredientType() {
@@ -40,7 +39,12 @@ public record RitualRecipeIngredientHelper() implements IIngredientHelper<Ritual
     @Nonnull
     @Override
     public RitualRecipeOffering copyIngredient(@NotNull RitualRecipeOffering ingredient) {
-        return ingredient;
+        return ingredient.copy();
+    }
+
+    @Override
+    public long getAmount(@NotNull RitualRecipeOffering ingredient) {
+        return ingredient.quantity();
     }
 
     @Nonnull

@@ -29,7 +29,8 @@ public record RitualRecipe(
         BlockState altar,
         ItemStack catalyst,
         List<RitualRecipeOffering> offerings,
-        ItemStack result,
+//        ItemStack result,
+        RitualRecipeOffering result,
         List<ResourceKey<Level>> dimensions,
         List<ResourceKey<Biome>> biomes,
         EffectHelper effect,
@@ -58,15 +59,20 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {return this.result.copy();}
+    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {
+//        return this.result.copy();
+        return ItemStack.EMPTY.copy();
+    }
 
     @Nonnull
-    public ItemStack execute(@NotNull RitualRecipeContext context) {
+//    public ItemStack execute(@NotNull RitualRecipeContext context) {
+    public RitualRecipeOffering execute(@NotNull RitualRecipeContext context) {
         context.consume();
         context.shrink(onTransmute, catalyst.getCount());
         context.player().swing(context.hand(), true);
         effect.apply((ServerLevel) context.level(), context.origin().above());
-        return assemble(context, context.level().registryAccess());
+//        return assemble(context, context.level().registryAccess());
+        return this.result;
     }
 
     @Override
@@ -74,7 +80,10 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {return this.result;}
+    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+//        return this.result;
+        return ItemStack.EMPTY;
+    }
 
     @Nonnull
     public Component dimensionsDescription() {

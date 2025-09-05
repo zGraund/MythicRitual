@@ -88,7 +88,8 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
                    tt.ifPresent(component -> tooltip.getLines().addAll(2, List.of(Either.left(component), Either.left(Component.empty()))));
                });
         builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
-        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
+//        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
+        builder.addOutputSlot(127, 19).setOutputSlotBackground().addIngredient(RitualRecipeJEIIngredient.TYPE, recipe.result());
 
         List<ItemRitualRecipeOffering> items = new ArrayList<>();
         List<MobRitualRecipeOffering> mobs = new ArrayList<>();

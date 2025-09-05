@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +42,18 @@ public record ItemRitualRecipeOffering(
         if (!(entity instanceof ItemEntity itemEntity)) return false;
         ItemStack input = itemEntity.getItem();
         return input.is(BuiltInRegistries.ITEM.get(type)) && input.getCount() - used >= quantity;
+    }
+
+    @Contract(" -> new")
+    @Override
+    public @NotNull RitualRecipeOffering copy() {
+        return new ItemRitualRecipeOffering(this.type, this.quantity, this.offset);
+    }
+
+    @Contract("_ -> new")
+    @Override
+    public Entity asEntity(Level level) {
+        return new ItemEntity(level, 0, 0, 0, this.asItemStack());
     }
 
     @Override
