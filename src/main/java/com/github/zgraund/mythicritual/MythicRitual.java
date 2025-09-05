@@ -2,14 +2,17 @@ package com.github.zgraund.mythicritual;
 
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.RitualRecipeContext;
+import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.registries.ModParticles;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.mojang.logging.LogUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -27,8 +30,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @Mod(MythicRitual.MOD_ID)
@@ -44,7 +46,11 @@ public class MythicRitual {
         NeoForge.EVENT_BUS.register(this);
 
         ModRecipes.register(modEventBus);
+        ModParticles.register(modEventBus);
     }
+
+    @Nonnull
+    public static ResourceLocation ID(String path) {return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);}
 
     // FIXME: ugly in game debugging, to remove asap
     @SubscribeEvent // on the game event bus
@@ -52,13 +58,6 @@ public class MythicRitual {
         if (event.getHand() == InteractionHand.OFF_HAND) return;
 
         Level level = event.getLevel();
-        if (level.isClientSide) return;
-
-        event.getEntity().sendSystemMessage(
-                Component.literal("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "]")
-                         .withStyle(ChatFormatting.GRAY)
-                         .append(Component.literal(" Click!").withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.ITALIC))
-        );
 
         BlockPos pos = event.getPos();
         BlockState blockState = level.getBlockState(pos);
@@ -67,14 +66,30 @@ public class MythicRitual {
         RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
         RitualRecipeContext input = new RitualRecipeContext(blockState, pos, itemStack, level, event.getEntity(), event.getHand());
 
-        Optional<RecipeHolder<RitualRecipe>> optional = recipes.getRecipeFor(type, input, level);
+        Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, input, level);
 
-        if (optional.isEmpty()) return;
+        if (recipe.isEmpty()) return;
+        if (!level.isClientSide) {
+//            ItemStack result = recipe.get().value().execute(input);
+            RitualRecipeOffering result = recipe.get().value().execute(input);
+//            ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
+//            for (int i = 0; i < result.quantity(); i++) {
+            Entity entity = result.asEntity(level);
+            if (entity == null) return;
+            entity.setPos(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+            entity.setDeltaMovement(0, 0.20, 0);
+            if (entity instanceof LivingEntity l) {
+                Direction dir = event.getEntity().getDirection();
+                Direction dir2 = dir.getOpposite();
 
-        ItemStack result = optional.get().value().execute(input);
-        ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, result);
-        entity.setDeltaMovement(0, 0.20, 0);
-        level.addFreshEntity(entity);
+                entity.setYRot(dir2.toYRot());
+                entity.setYBodyRot(dir2.toYRot());
+                entity.setYHeadRot(dir2.toYRot());
+                entity.setDeltaMovement(0, 0, 0);
+            }
+            level.addFreshEntity(entity);
+//            }
+        }
 
         event.setCancellationResult(InteractionResult.SUCCESS);
         event.setCanceled(true);

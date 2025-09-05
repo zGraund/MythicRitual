@@ -4,17 +4,25 @@ import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
-public sealed interface RitualRecipeIngredient permits ItemRitualRecipeIngredient, MobRitualRecipeIngredient {
+import javax.annotation.Nullable;
+import java.util.List;
 
-    Codec<RitualRecipeIngredient> CODEC = ResourceLocation.CODEC.dispatch(
-            RitualRecipeIngredient::type,
+public sealed interface RitualRecipeOffering permits ItemRitualRecipeOffering, MobRitualRecipeOffering {
+
+    Codec<RitualRecipeOffering> CODEC = ResourceLocation.CODEC.dispatch(
+            RitualRecipeOffering::type,
             type -> {
-                if (BuiltInRegistries.ITEM.containsKey(type)) return ItemRitualRecipeIngredient.CODEC;
+                if (BuiltInRegistries.ITEM.containsKey(type)) return ItemRitualRecipeOffering.CODEC;
                 if (!type.equals(ResourceLocation.parse("minecraft:item")) && BuiltInRegistries.ENTITY_TYPE.containsKey(type))
-                    return MobRitualRecipeIngredient.CODEC;
+                    return MobRitualRecipeOffering.CODEC;
                 throw new IllegalArgumentException("Unknown ritual ingredient type: " + type);
             }
     );
@@ -28,6 +36,15 @@ public sealed interface RitualRecipeIngredient permits ItemRitualRecipeIngredien
     Boolean test(EntityConsumer entityConsumer);
 
     default int quantity() {return 1;}
+
+    RitualRecipeOffering copy();
+
+    @Nullable
+    Entity asEntity(Level level);
+
+    Component getDisplayName();
+
+    List<Component> getTooltipLines(Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag);
 
     // TODO: BlockState as ingredient
     // Boolean test(BlockState block);

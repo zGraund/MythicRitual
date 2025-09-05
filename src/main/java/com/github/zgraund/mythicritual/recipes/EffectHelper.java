@@ -1,12 +1,11 @@
 package com.github.zgraund.mythicritual.recipes;
 
+import com.github.zgraund.mythicritual.registries.ModParticles;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -19,23 +18,18 @@ public enum EffectHelper implements StringRepresentable {
     PARTICLES("particles") {
         @Override
         public void apply(@NotNull ServerLevel level, BlockPos pos) {
-            RandomSource random = level.getRandom();
+            level.playSound(null, pos, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 0.3f, 0.1f);
 
-            level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS);
-
-            for (int i = 0; i < 10; i++) {
-                // Random angle around the circle
-                double angle = random.nextDouble() * 2 * Math.PI;
-
-                // Radial velocity outward
-                double speed = 0.15 + random.nextDouble() * 0.2;
-                double vx = Math.cos(angle) * speed;
-                double vz = Math.sin(angle) * speed;
-
-                // Upward velocity
-                double vy = 0.3 + random.nextDouble() * 0.2;
-
-                level.sendParticles(ParticleTypes.CRIT, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 2, vx, vy, vz, 0.5);
+            int[][] directions = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+            for (int[] dir : directions) {
+                double hOffset = 0.15 / (Math.abs(dir[0]) + Math.abs(dir[1]));
+                level.sendParticles(
+                        ModParticles.RITUAL_PARTICLES.get(),
+                        pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
+                        0, // Need to be 0 cuz mojang
+                        dir[0] * hOffset, 0.6, dir[1] * hOffset,
+                        0.5
+                );
             }
         }
     },

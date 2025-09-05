@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.recipes;
 
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
+import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
@@ -22,26 +22,26 @@ import java.util.stream.Collectors;
 
 public final class RitualRecipeContext implements RecipeInput {
     private final HashMap<BlockPos, List<EntityConsumer>> validatedInput = new HashMap<>();
-    private final BlockState target;
+    private final BlockState altar;
     private final BlockPos origin;
-    private final ItemStack trigger;
+    private final ItemStack catalyst;
     private final Level level;
     private final Player player;
     private final InteractionHand hand;
 
     public RitualRecipeContext(BlockState target, BlockPos origin, ItemStack trigger, Level level, Player player, InteractionHand hand) {
-        this.target = target;
+        this.altar = target;
         this.origin = origin;
-        this.trigger = trigger;
+        this.catalyst = trigger;
         this.level = level;
         this.player = player;
         this.hand = hand;
     }
 
     @NonNull
-    public HashMap<BlockPos, List<EntityConsumer>> entitiesByPosition(@NotNull List<RitualRecipeIngredient> ingredients) {
+    public HashMap<BlockPos, List<EntityConsumer>> entitiesByPosition(@NotNull List<RitualRecipeOffering> ingredients) {
         HashMap<BlockPos, List<EntityConsumer>> out = new HashMap<>();
-        for (RitualRecipeIngredient ingredient : ingredients) {
+        for (RitualRecipeOffering ingredient : ingredients) {
             BlockPos target = RotationUtils.relativeTo(origin, ingredient.offset(), player.getDirection());
             if (out.containsKey(target)) continue;
             out.put(target, level.getEntities(null, new AABB(target)).stream().map(e -> new EntityConsumer(e, 0)).collect(Collectors.toList()));
@@ -50,25 +50,33 @@ public final class RitualRecipeContext implements RecipeInput {
     }
 
     public boolean accept(@NotNull RitualRecipe recipe) {
-        return target.getBlock().defaultBlockState() == recipe.target()
-               && trigger.is(recipe.trigger().getItem())
-               && (trigger.isDamageableItem() ? trigger.getMaxDamage() - trigger.getDamageValue() : trigger.getCount()) >= recipe.trigger().getCount()
+        return altar.getBlock().defaultBlockState() == recipe.altar()
+               && catalyst.is(recipe.catalyst().getItem())
+               && (recipe.onTransmute() != ActionOnTransmute.DESTROY || catalyst.getDamageValue() == 0)
+               && catalyst.getCount() >= recipe.catalyst().getCount()
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
-               && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals));
+               && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals))
+               && (recipe.biomes().isEmpty() || recipe.biomes().stream().anyMatch(level.getBiome(origin)::is));
     }
 
     public void consume() {
         validatedInput.values().stream().flatMap(List::stream).forEach(EntityConsumer::consume);
     }
 
-    public void shrink(int quantity) {
+    public void shrink(ActionOnTransmute action, int quantity) {
         if (player.isCreative()) return;
-        ItemStack item = player.getItemInHand(hand);
-        if (item.isDamageableItem()) {
-            item.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
-        } else {
-            item.shrink(quantity);
+        switch (action) {
+            case DESTROY -> {
+                catalyst.setDamageValue(catalyst.getMaxDamage());
+                damageOrShrink(catalyst.getMaxDamage());
+            }
+            case CONSUME -> damageOrShrink(quantity);
         }
+    }
+
+    private void damageOrShrink(int quantity) {
+        if (catalyst.isDamageableItem()) catalyst.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
+        else catalyst.shrink(quantity);
     }
 
     public void commit(HashMap<BlockPos, List<EntityConsumer>> entities) {
@@ -92,11 +100,11 @@ public final class RitualRecipeContext implements RecipeInput {
         return false;
     }
 
-    public BlockState target() {return target;}
+    public BlockState target() {return altar;}
 
     public BlockPos origin() {return origin;}
 
-    public ItemStack trigger() {return trigger;}
+    public ItemStack trigger() {return catalyst;}
 
     public Level level() {return level;}
 
@@ -110,9 +118,9 @@ public final class RitualRecipeContext implements RecipeInput {
     public String toString() {
         return "RitualRecipeContext{" +
                "validatedInput=" + validatedInput +
-               ", target=" + target +
+               ", altar=" + altar +
                ", origin=" + origin +
-               ", trigger=" + trigger +
+               ", catalyst=" + catalyst +
                ", level=" + level +
                ", player=" + player +
                '}';

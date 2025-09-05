@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.recipes;
 
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeIngredient;
+import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
@@ -18,14 +19,16 @@ import java.util.List;
 
 public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
     public static final MapCodec<RitualRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                    BlockState.CODEC.fieldOf("target").forGetter(RitualRecipe::target),
-                    ItemStack.CODEC.optionalFieldOf("trigger", ItemStack.EMPTY).forGetter(RitualRecipe::trigger),
-                    RitualRecipeIngredient.CODEC.listOf().fieldOf("ingredients").forGetter(RitualRecipe::ingredients),
-                    ItemStack.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
-                    ResourceKey.codec(Registries.DIMENSION).listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
+                    BlockState.CODEC.fieldOf("altar").forGetter(RitualRecipe::altar),
+                    ItemStack.CODEC.optionalFieldOf("catalyst", ItemStack.EMPTY).forGetter(RitualRecipe::catalyst),
+                    RitualRecipeOffering.CODEC.listOf().fieldOf("offerings").forGetter(RitualRecipe::offerings),
+//                    ItemStack.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
+                    RitualRecipeOffering.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
+                    Level.RESOURCE_KEY_CODEC.listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
+                    ResourceKey.codec(Registries.BIOME).listOf().optionalFieldOf("biomes", List.of()).forGetter(RitualRecipe::biomes),
                     EffectHelper.CODEC.optionalFieldOf("effect", EffectHelper.NONE).forGetter(RitualRecipe::effect),
                     Codec.BOOL.optionalFieldOf("needSky", false).forGetter(RitualRecipe::needSky),
-                    Codec.BOOL.optionalFieldOf("consumeTrigger", false).forGetter(RitualRecipe::consumeTrigger)
+                    ActionOnTransmute.CODEC.optionalFieldOf("onTransmute", ActionOnTransmute.NONE).forGetter(RitualRecipe::onTransmute)
             ).apply(inst, RitualRecipe::new)
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, RitualRecipe> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
