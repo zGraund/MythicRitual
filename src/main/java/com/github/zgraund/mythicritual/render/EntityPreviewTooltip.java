@@ -49,6 +49,7 @@ public record EntityPreviewTooltip(EntityType<?> type, int size) implements Clie
         int cx = x + size / 2;
         int cy = (int) (y + (size + (height * scale)) / 2);
 
+//        guiGraphics.fill(x, y, x + size, y + size, 0xffffffff);
         guiGraphics.enableScissor(x, y, x + size, y + size);
         InventoryScreen.renderEntityInInventory(
                 guiGraphics,

@@ -26,7 +26,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +37,7 @@ import java.util.Optional;
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
     public static final ResourceLocation TEXTURE = MythicRitual.ID("textures/gui/gui_test_2.png");
+    public static final ResourceLocation ICON = MythicRitual.ID("textures/gui/ritual_recipe/recipe_icon.png");
     public static final RecipeType<RitualRecipe> TYPE = new RecipeType<>(UID, RitualRecipe.class);
 
     private final int hammerX = 38;
@@ -60,7 +60,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     public RitualRecipeJEICategory(@NotNull IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, width, height);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ANVIL));
+        this.icon = helper.drawableBuilder(ICON, 0, 0, 16, 16).setTextureSize(16, 16).build();
         this.guiHelper = helper;
         this.infoIcon = helper.drawableBuilder(MythicRitual.ID("textures/gui/sprites/info_icon_small.png"), 0, 0, 16, 16)
                               .setTextureSize(16, 16)

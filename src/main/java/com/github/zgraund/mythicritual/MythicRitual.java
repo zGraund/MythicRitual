@@ -1,5 +1,7 @@
 package com.github.zgraund.mythicritual;
 
+import com.github.zgraund.mythicritual.component.ModDataComponent;
+import com.github.zgraund.mythicritual.item.ModItems;
 import com.github.zgraund.mythicritual.recipes.RitualRecipe;
 import com.github.zgraund.mythicritual.recipes.RitualRecipeContext;
 import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
@@ -47,6 +49,8 @@ public class MythicRitual {
 
         ModRecipes.register(modEventBus);
         ModParticles.register(modEventBus);
+        ModItems.register(modEventBus);
+        ModDataComponent.register(modEventBus);
     }
 
     @Nonnull
