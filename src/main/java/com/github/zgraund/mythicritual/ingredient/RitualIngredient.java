@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -31,7 +32,7 @@ public class RitualIngredient implements ICustomIngredient {
                     BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity")
             ).xmap(
                     i -> i.map(items -> items, ItemsHolder::fromEntity),
-                    items -> ItemsHolder.hasEntity(items) ? Either.left(items) : Either.right(ItemsHolder.toEntity(items))
+                    holder -> ItemsHolder.isEntity(holder) ? Either.left(holder) : Either.right(ItemsHolder.toEntity(holder))
             ).forGetter(RitualIngredient::itemsHolder),
             ExtraCodecs.POSITIVE_INT.optionalFieldOf("count", 1).forGetter(RitualIngredient::count)
     ).apply(inst, RitualIngredient::new));
@@ -41,9 +42,9 @@ public class RitualIngredient implements ICustomIngredient {
     private final int count;
     private final ItemStack[] stacks;
 
-    public RitualIngredient(@NotNull ItemsHolder items, int count) {
-        this.items = items.items;
-        this.components = items.components;
+    public RitualIngredient(@NotNull ItemsHolder holder, int count) {
+        this.items = holder.items;
+        this.components = holder.components;
         this.count = count;
         this.stacks = this.items.stream().map(i -> new ItemStack(i, 1, components.asPatch())).toArray(ItemStack[]::new);
     }
@@ -54,13 +55,13 @@ public class RitualIngredient implements ICustomIngredient {
 
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return false;
+        return items.contains(stack.getItemHolder()) && components.test(stack);
     }
 
     @Nonnull
     @Override
     public Stream<ItemStack> getItems() {
-        return Stream.of(stacks);
+        return Arrays.stream(stacks);
     }
 
     @Override
@@ -84,8 +85,7 @@ public class RitualIngredient implements ICustomIngredient {
 
     @Nullable
     public EntityType<?> entityType() {
-        Optional<? extends EntityType<?>> entity = components.asPatch().get(ModDataComponent.SOUL_ENTITY_TYPE.get());
-        return entity != null && entity.isPresent() ? entity.get() : null;
+        return ItemsHolder.toEntity(itemsHolder());
     }
 
     @Override
@@ -99,7 +99,9 @@ public class RitualIngredient implements ICustomIngredient {
 
     public record ItemsHolder(HolderSet<Item> items, DataComponentPredicate components) {
         public static final MapCodec<ItemsHolder> CODEC = RecordCodecBuilder.mapCodec(ins -> ins.group(
-                HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false).fieldOf("items").forGetter(ItemsHolder::items),
+                HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false)
+                              .fieldOf("items")
+                              .forGetter(ItemsHolder::items),
                 DataComponentPredicate.CODEC.optionalFieldOf("components", DataComponentPredicate.EMPTY).forGetter(ItemsHolder::components)
         ).apply(ins, ItemsHolder::new));
 
@@ -109,11 +111,11 @@ public class RitualIngredient implements ICustomIngredient {
         }
 
         @Nullable
-        public static EntityType<?> toEntity(@NotNull RitualIngredient.ItemsHolder items) {
-            Optional<? extends EntityType<?>> entity = items.components.asPatch().get(ModDataComponent.SOUL_ENTITY_TYPE.get());
+        public static EntityType<?> toEntity(@NotNull ItemsHolder holder) {
+            Optional<? extends EntityType<?>> entity = holder.components.asPatch().get(ModDataComponent.SOUL_ENTITY_TYPE.get());
             return entity != null && entity.isPresent() ? entity.get() : null;
         }
 
-        public static boolean hasEntity(ItemsHolder item) {return toEntity(item) != null;}
+        public static boolean isEntity(ItemsHolder holder) {return toEntity(holder) != null;}
     }
 }
