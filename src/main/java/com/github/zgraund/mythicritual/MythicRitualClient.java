@@ -1,7 +1,7 @@
 package com.github.zgraund.mythicritual;
 
 import com.github.zgraund.mythicritual.particle.RitualParticle;
-import com.github.zgraund.mythicritual.registries.ModParticles;
+import com.github.zgraund.mythicritual.particle.ModParticles;
 import com.github.zgraund.mythicritual.render.EntityPreviewTooltip;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

@@ -1,13 +1,9 @@
 package com.github.zgraund.mythicritual.item;
 
-import com.github.zgraund.mythicritual.component.ModDataComponent;
+import com.github.zgraund.mythicritual.component.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -19,14 +15,6 @@ import java.util.List;
 public class SoulItem extends Item {
     public SoulItem(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    @Nonnull
-    public InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull LivingEntity interactionTarget,
-                                                  @NotNull InteractionHand usedHand) {
-        player.getItemInHand(usedHand).set(ModDataComponent.SOUL_ENTITY_TYPE, interactionTarget.getType());
-        return super.interactLivingEntity(stack, player, interactionTarget, usedHand);
     }
 
     @Override
@@ -43,7 +31,7 @@ public class SoulItem extends Item {
 
 //    @Override
 //    public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-//        EntityType<?> type = stack.get(ModDataComponent.SOUL_ENTITY_TYPE);
+//        EntityType<?> type = stack.get(ModDataComponents.SOUL_ENTITY_TYPE);
 //        if (type != null) {
 //            return Optional.of(new EntityPreviewTooltip(type, 50));
 //        }
@@ -59,10 +47,10 @@ public class SoulItem extends Item {
 
     @Nonnull
     private EntityType<?> getEntity(@NotNull ItemStack stack) {
-        return stack.getOrDefault(ModDataComponent.SOUL_ENTITY_TYPE, EntityType.PIG);
+        return stack.getOrDefault(ModDataComponents.SOUL_ENTITY_TYPE, EntityType.PIG);
     }
 
     private boolean hasEntity(@NotNull ItemStack stack) {
-        return stack.has(ModDataComponent.SOUL_ENTITY_TYPE);
+        return stack.has(ModDataComponents.SOUL_ENTITY_TYPE);
     }
 }

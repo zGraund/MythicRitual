@@ -9,7 +9,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class ModDataComponent {
+public class ModDataComponents {
     public static final DeferredRegister.DataComponents REGISTRAR = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MythicRitual.MOD_ID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<EntityType<?>>> SOUL_ENTITY_TYPE = REGISTRAR.registerComponentType(

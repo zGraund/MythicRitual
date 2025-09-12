@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.ingredient;
 
-import com.github.zgraund.mythicritual.component.ModDataComponent;
+import com.github.zgraund.mythicritual.component.ModDataComponents;
 import com.github.zgraund.mythicritual.item.ModItems;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
@@ -26,13 +26,14 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class RitualIngredient implements ICustomIngredient {
+    public static final RitualIngredient EMPTY = new RitualIngredient(HolderSet.empty(), DataComponentPredicate.EMPTY, 0);
     public static final MapCodec<RitualIngredient> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             NeoForgeExtraCodecs.xor(
                     ItemsHolder.CODEC,
                     BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity")
             ).xmap(
                     i -> i.map(items -> items, ItemsHolder::fromEntity),
-                    holder -> ItemsHolder.isEntity(holder) ? Either.left(holder) : Either.right(ItemsHolder.toEntity(holder))
+                    holder -> ItemsHolder.isEntity(holder) ? Either.right(ItemsHolder.toEntity(holder)) : Either.left(holder)
             ).forGetter(RitualIngredient::itemsHolder),
             ExtraCodecs.POSITIVE_INT.optionalFieldOf("count", 1).forGetter(RitualIngredient::count)
     ).apply(inst, RitualIngredient::new));
@@ -55,7 +56,7 @@ public class RitualIngredient implements ICustomIngredient {
 
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return items.contains(stack.getItemHolder()) && components.test(stack);
+        return items.contains(stack.getItemHolder()) && stack.getCount() >= count && components.test(stack);
     }
 
     @Nonnull
@@ -83,6 +84,8 @@ public class RitualIngredient implements ICustomIngredient {
 
     public int count() {return count;}
 
+    public ItemStack asItemStack() {return Arrays.stream(stacks).findFirst().orElse(ItemStack.EMPTY);}
+
     @Nullable
     public EntityType<?> entityType() {
         return ItemsHolder.toEntity(itemsHolder());
@@ -107,12 +110,12 @@ public class RitualIngredient implements ICustomIngredient {
 
         @Nonnull
         public static ItemsHolder fromEntity(EntityType<?> entity) {
-            return new ItemsHolder(HolderSet.direct(ModItems.SOUL), DataComponentPredicate.builder().expect(ModDataComponent.SOUL_ENTITY_TYPE.get(), entity).build());
+            return new ItemsHolder(HolderSet.direct(ModItems.SOUL), DataComponentPredicate.builder().expect(ModDataComponents.SOUL_ENTITY_TYPE.get(), entity).build());
         }
 
         @Nullable
         public static EntityType<?> toEntity(@NotNull ItemsHolder holder) {
-            Optional<? extends EntityType<?>> entity = holder.components.asPatch().get(ModDataComponent.SOUL_ENTITY_TYPE.get());
+            Optional<? extends EntityType<?>> entity = holder.components.asPatch().get(ModDataComponents.SOUL_ENTITY_TYPE.get());
             return entity != null && entity.isPresent() ? entity.get() : null;
         }
 
