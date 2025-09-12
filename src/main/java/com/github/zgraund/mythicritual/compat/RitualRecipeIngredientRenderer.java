@@ -1,9 +1,9 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeOffering;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.ItemRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.MobRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
 import com.github.zgraund.mythicritual.render.EntityPreviewTooltip;
 import mezz.jei.api.gui.builder.ITooltipBuilder;

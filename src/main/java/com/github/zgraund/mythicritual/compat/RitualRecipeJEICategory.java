@@ -1,10 +1,10 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.ActionOnTransmute;
-import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeOffering;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ActionOnTransmute;
+import com.github.zgraund.mythicritual.recipes_old.RitualRecipe;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.ItemRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.MobRitualRecipeOffering;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.constants.VanillaTypes;

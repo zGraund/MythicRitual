@@ -1,6 +1,6 @@
 package com.github.zgraund.mythicritual.compat;
 
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import mezz.jei.api.ingredients.IIngredientType;
 
 public record RitualRecipeJEIIngredient() {

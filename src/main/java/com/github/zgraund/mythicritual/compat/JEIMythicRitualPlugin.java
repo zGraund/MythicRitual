@@ -1,9 +1,9 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.RitualRecipe;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.MobRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -41,7 +41,7 @@ public class JEIMythicRitualPlugin implements IModPlugin {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
         RecipeManager recipeManager = level.getRecipeManager();
-        List<RecipeHolder<RitualRecipe>> recipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get());
+        List<RecipeHolder<RitualRecipe>> recipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE_OLD.get());
 
         List<RitualRecipeOffering> recipeOfferings = recipes
                 .stream()
@@ -65,7 +65,7 @@ public class JEIMythicRitualPlugin implements IModPlugin {
         if (level == null) return;
 
         RecipeManager recipeManager = level.getRecipeManager();
-        List<RitualRecipe> ritualRecipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        List<RitualRecipe> ritualRecipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE_OLD.get()).stream().map(RecipeHolder::value).toList();
         registration.addRecipes(RitualRecipeJEICategory.TYPE, ritualRecipes);
         ritualRecipes.forEach(recipe -> {
             List<RitualRecipeOffering> ingredients = recipe.offerings().stream().filter(MobRitualRecipeOffering.class::isInstance).toList();
