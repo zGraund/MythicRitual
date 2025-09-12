@@ -1,6 +1,6 @@
-package com.github.zgraund.mythicritual.recipes;
+package com.github.zgraund.mythicritual.recipes_old;
 
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;

@@ -1,6 +1,6 @@
-package com.github.zgraund.mythicritual.recipes;
+package com.github.zgraund.mythicritual.recipes_old;
 
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.github.zgraund.mythicritual.util.RotationUtils;
@@ -116,8 +116,8 @@ public record RitualRecipe(
     }
 
     @Nonnull
-    public RecipeSerializer<?> getSerializer() {return ModRecipes.RITUAL_RECIPE_SERIALIZER.get();}
+    public RecipeSerializer<?> getSerializer() {return ModRecipes.RITUAL_RECIPE_SERIALIZER_OLD.get();}
 
     @Nonnull
-    public RecipeType<?> getType() {return ModRecipes.RITUAL_RECIPE_TYPE.get();}
+    public RecipeType<?> getType() {return ModRecipes.RITUAL_RECIPE_TYPE_OLD.get();}
 }

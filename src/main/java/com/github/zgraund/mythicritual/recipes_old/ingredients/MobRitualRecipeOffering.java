@@ -1,4 +1,4 @@
-package com.github.zgraund.mythicritual.recipes.ingredients;
+package com.github.zgraund.mythicritual.recipes_old.ingredients;
 
 import com.github.zgraund.mythicritual.util.EntityConsumer;
 import com.mojang.serialization.MapCodec;

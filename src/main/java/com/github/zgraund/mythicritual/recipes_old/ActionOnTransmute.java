@@ -1,4 +1,4 @@
-package com.github.zgraund.mythicritual.recipes;
+package com.github.zgraund.mythicritual.recipes_old;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;

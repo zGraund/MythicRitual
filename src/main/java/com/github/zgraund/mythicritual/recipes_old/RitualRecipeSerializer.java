@@ -1,6 +1,6 @@
-package com.github.zgraund.mythicritual.recipes;
+package com.github.zgraund.mythicritual.recipes_old;
 
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -21,7 +21,7 @@ public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
     public static final MapCodec<RitualRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                     BlockState.CODEC.fieldOf("altar").forGetter(RitualRecipe::altar),
                     ItemStack.CODEC.optionalFieldOf("catalyst", ItemStack.EMPTY).forGetter(RitualRecipe::catalyst),
-                    RitualRecipeOffering.CODEC.listOf().fieldOf("offerings").forGetter(RitualRecipe::offerings),
+                    RitualRecipeOffering.CODEC.listOf().fieldOf("locations").forGetter(RitualRecipe::offerings),
 //                    ItemStack.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
                     RitualRecipeOffering.CODEC.fieldOf("result").forGetter(RitualRecipe::result),
                     Level.RESOURCE_KEY_CODEC.listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),

@@ -1,6 +1,6 @@
-package com.github.zgraund.mythicritual.recipes;
+package com.github.zgraund.mythicritual.recipes_old;
 
-import com.github.zgraund.mythicritual.registries.ModParticles;
+import com.github.zgraund.mythicritual.particle.ModParticles;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
