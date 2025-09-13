@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 public class RitualRecipeContext implements RecipeInput {
-    private final HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> entitiesFound = new HashMap<Vec3i, List<RitualRecipe.OfferingHolder>>();
+    private final HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> entitiesFound = new HashMap<>();
     private final BlockState altar;
     private final BlockPos origin;
     private final ItemStack catalyst;
