@@ -17,10 +17,10 @@ import org.joml.Vector3f;
 
 public record EntityPreviewTooltip(EntityType<?> type, int size) implements ClientTooltipComponent, TooltipComponent {
     @Override
-    public int getHeight() {return size;}
+    public int getHeight() {return size + 2;}
 
     @Override
-    public int getWidth(@NotNull Font font) {return size;}
+    public int getWidth(@NotNull Font font) {return size + 2;}
 
     @Override
     public void renderImage(@NotNull Font font, int x, int y, @NotNull GuiGraphics guiGraphics) {
@@ -49,7 +49,12 @@ public record EntityPreviewTooltip(EntityType<?> type, int size) implements Clie
         int cx = x + size / 2;
         int cy = (int) (y + (size + (height * scale)) / 2);
 
-//        guiGraphics.fill(x, y, x + size, y + size, 0xffffffff);
+        int lineColor = 0xFF8C00BF;
+        guiGraphics.vLine(x, y, y + size, lineColor);           // Vertical left
+        guiGraphics.vLine(x + size, y, y + size, lineColor); // Vertical right
+        guiGraphics.hLine(x, x + size, y, lineColor);           // Horizontal top
+        guiGraphics.hLine(x, x + size, y + size, lineColor); // Horizontal bottom
+
         guiGraphics.enableScissor(x, y, x + size, y + size);
         InventoryScreen.renderEntityInInventory(
                 guiGraphics,

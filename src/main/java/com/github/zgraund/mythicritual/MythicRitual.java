@@ -32,7 +32,6 @@ public class MythicRitual {
         // Register ourselves for server and other game events we are interested in.
         NeoForge.EVENT_BUS.register(this);
 
-        com.github.zgraund.mythicritual.registries.ModRecipes.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModIngredients.register(modEventBus);
         ModItems.register(modEventBus);

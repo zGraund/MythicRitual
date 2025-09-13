@@ -6,26 +6,23 @@ import com.github.zgraund.mythicritual.component.ModDataComponents;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.item.ModItems;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -34,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public record RitualRecipe(
         BlockState altar,
@@ -49,25 +47,21 @@ public record RitualRecipe(
     @Override
     public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
         if (!context.accept(this)) return false;
-
         HashMap<Vec3i, List<OfferingHolder>> inputEntities = context.itemsByOffset(locations.keySet());
-
-        if (inputEntities.isEmpty()) return false;
         if (inputEntities.size() != locations.size()) return false;
-
         for (Map.Entry<Vec3i, List<RitualIngredient>> location : locations.entrySet()) {
             List<OfferingHolder> entitiesAt = inputEntities.get(location.getKey());
             if (entitiesAt == null || entitiesAt.isEmpty()) return false;
-
-            ingredient:
             for (RitualIngredient ingredient : location.getValue()) {
+                boolean found = false;
                 for (OfferingHolder input : entitiesAt) {
                     if (ingredient.test(input.normalized())) {
                         input.shrink(ingredient.count());
-                        continue ingredient;
+                        found = true;
+                        break;
                     }
                 }
-                return false;
+                if (!found) return false;
             }
         }
         return true;
@@ -90,10 +84,14 @@ public record RitualRecipe(
         if (result.is(ModItems.SOUL)) {
             EntityType<?> type = result.get(ModDataComponents.SOUL_ENTITY_TYPE);
             if (type == null) {
-                MythicRitual.LOGGER.error("No EntityType present in Soul item");
+                MythicRitual.LOGGER.error("No EntityType present in Soul item for recipe {}", this);
                 return null;
             }
-            return type.create(level);
+            Entity entity = type.create(level);
+            if (entity instanceof Mob mob) {
+                EventHooks.finalizeMobSpawn(mob, (ServerLevel) level, level.getCurrentDifficultyAt(context.origin()), MobSpawnType.MOB_SUMMONED, null);
+            }
+            return entity;
         }
         return new ItemEntity(level, 0, 0, 0, result);
     }
@@ -105,6 +103,16 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
         return this.result.asItemStack();
+    }
+
+    @Override
+    @Nonnull
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(Ingredient.EMPTY, locations.values().stream().flatMap(List::stream).map(RitualIngredient::toVanilla).toArray(Ingredient[]::new));
+    }
+
+    public Stream<RitualIngredient> getCustomIngredients() {
+        return locations.values().stream().flatMap(List::stream);
     }
 
     @Nonnull
@@ -150,7 +158,7 @@ public record RitualRecipe(
             switch (original) {
                 case ItemEntity i -> i.getItem().shrink(Math.abs(normalized.getCount() - i.getItem().getCount()));
                 case LivingEntity l -> {
-                    if (!normalized.isEmpty() || normalized.getCount() > 0) return;
+                    if (normalized.getCount() > 0) return;
                     l.setData(ModDataAttachments.IS_SACRIFICED, true);
                     l.hurt(new DamageSources(original.level().registryAccess()).magic(), Float.MAX_VALUE);
                 }

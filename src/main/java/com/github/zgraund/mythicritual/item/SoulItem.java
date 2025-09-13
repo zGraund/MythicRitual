@@ -1,9 +1,12 @@
 package com.github.zgraund.mythicritual.item;
 
 import com.github.zgraund.mythicritual.component.ModDataComponents;
+import com.github.zgraund.mythicritual.render.EntityPreviewTooltip;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -11,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 public class SoulItem extends Item {
     public SoulItem(Properties properties) {
@@ -29,19 +33,23 @@ public class SoulItem extends Item {
         return super.getName(stack);
     }
 
-//    @Override
-//    public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-//        EntityType<?> type = stack.get(ModDataComponents.SOUL_ENTITY_TYPE);
-//        if (type != null) {
-//            return Optional.of(new EntityPreviewTooltip(type, 50));
-//        }
-//        return super.getTooltipImage(stack);
-//    }
+    @Override
+    @Nonnull
+    public Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
+        EntityType<?> type = stack.get(ModDataComponents.SOUL_ENTITY_TYPE);
+        if (type != null && Screen.hasShiftDown()) {
+            return Optional.of(new EntityPreviewTooltip(type, 90));
+        }
+        return super.getTooltipImage(stack);
+    }
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        if (hasEntity(stack)) {
-            tooltipComponents.add(Component.translatable("item.mythicritual.soul.preview_text").withStyle(ChatFormatting.DARK_GRAY));
+        if (hasEntity(stack) && !tooltipFlag.hasShiftDown()) {
+            tooltipComponents.add(Component.translatable("item.mythicritual.soul.preview_text").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            if (tooltipFlag.isAdvanced()) {
+                tooltipComponents.add(Component.literal(EntityType.getKey(getEntity(stack)).toString()).withStyle(ChatFormatting.DARK_GRAY));
+            }
         }
     }
 

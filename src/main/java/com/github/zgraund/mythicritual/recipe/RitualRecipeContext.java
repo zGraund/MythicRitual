@@ -1,6 +1,5 @@
 package com.github.zgraund.mythicritual.recipe;
 
-import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.component.ModDataComponents;
 import com.github.zgraund.mythicritual.item.ModItems;
 import com.github.zgraund.mythicritual.util.RotationUtils;
@@ -62,15 +61,12 @@ public class RitualRecipeContext implements RecipeInput {
         return altar.getBlock().defaultBlockState() == recipe.altar()
                && recipe.catalyst().test(catalyst)
                && (recipe.onTransmute() != ActionOnTransmute.DESTROY || catalyst.getDamageValue() == 0)
-//               && catalyst.getCount() >= recipe.catalyst().count()
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals))
                && (recipe.biomes().size() == 0 || recipe.biomes().contains(level.getBiome(origin)));
     }
 
     public void consume() {
-        MythicRitual.LOGGER.debug("{}", entitiesFound);
-//        validatedInput.values().stream().flatMap(List::stream).forEach(EntityConsumer::consume);
         entitiesFound.values().stream().flatMap(List::stream).forEach(RitualRecipe.OfferingHolder::consume);
     }
 
@@ -88,10 +84,6 @@ public class RitualRecipeContext implements RecipeInput {
     private void damageOrShrink(int quantity) {
         if (catalyst.isDamageableItem()) catalyst.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
         else catalyst.shrink(quantity);
-    }
-
-    public void commit(HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> entities) {
-        entitiesFound.putAll(entities);
     }
 
     @Override
