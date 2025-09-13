@@ -1,4 +1,4 @@
-package com.github.zgraund.mythicritual.compat;
+package com.github.zgraund.mythicritual.compat.ritual_recipe_old;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes_old.RitualRecipe;
@@ -6,7 +6,6 @@ import com.github.zgraund.mythicritual.recipes_old.ingredients.MobRitualRecipeOf
 import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import com.github.zgraund.mythicritual.registries.ModRecipes;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -23,12 +22,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
-@JeiPlugin
+//@JeiPlugin
 public class JEIMythicRitualPlugin implements IModPlugin {
     @Override
     @Nonnull
     public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(MythicRitual.MOD_ID, "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath(MythicRitual.MOD_ID, "jei_plugin_ritual_old");
     }
 
     @Override

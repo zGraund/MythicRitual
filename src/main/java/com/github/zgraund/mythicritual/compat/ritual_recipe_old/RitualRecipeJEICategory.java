@@ -1,4 +1,4 @@
-package com.github.zgraund.mythicritual.compat;
+package com.github.zgraund.mythicritual.compat.ritual_recipe_old;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipes_old.ActionOnTransmute;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
-    public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
+    public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe_old");
     public static final ResourceLocation TEXTURE = MythicRitual.ID("textures/gui/gui_test_2.png");
     public static final ResourceLocation ICON = MythicRitual.ID("textures/gui/ritual_recipe/recipe_icon.png");
     public static final RecipeType<RitualRecipe> TYPE = new RecipeType<>(UID, RitualRecipe.class);

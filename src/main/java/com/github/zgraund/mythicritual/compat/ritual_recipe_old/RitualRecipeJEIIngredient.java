@@ -1,4 +1,4 @@
-package com.github.zgraund.mythicritual.compat;
+package com.github.zgraund.mythicritual.compat.ritual_recipe_old;
 
 import com.github.zgraund.mythicritual.recipes_old.ingredients.RitualRecipeOffering;
 import mezz.jei.api.ingredients.IIngredientType;
