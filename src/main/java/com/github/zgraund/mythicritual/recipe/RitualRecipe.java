@@ -47,8 +47,8 @@ public record RitualRecipe(
     @Override
     public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
         if (!context.accept(this)) return false;
+        if (locations.isEmpty()) return true;
         HashMap<Vec3i, List<OfferingHolder>> inputEntities = context.itemsByOffset(locations.keySet());
-        if (inputEntities.size() != locations.size()) return false;
         for (Map.Entry<Vec3i, List<RitualIngredient>> location : locations.entrySet()) {
             List<OfferingHolder> entitiesAt = inputEntities.get(location.getKey());
             if (entitiesAt == null || entitiesAt.isEmpty()) return false;
@@ -64,6 +64,7 @@ public record RitualRecipe(
                 if (!found) return false;
             }
         }
+
         return true;
     }
 

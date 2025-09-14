@@ -34,21 +34,23 @@ public class ModEvents {
     public static void useItemOnBlock(PlayerInteractEvent.@NotNull RightClickBlock event) {
         if (event.getHand() == InteractionHand.OFF_HAND) return;
 
-        Player player = event.getEntity();
         Level level = event.getLevel();
-        BlockPos origin = event.getPos();
-        BlockState altar = level.getBlockState(origin);
-        ItemStack catalyst = event.getItemStack();
-        RecipeManager recipes = level.getRecipeManager();
-
-        RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
-        RitualRecipeContext context = new RitualRecipeContext(altar, origin, catalyst, level, event.getEntity(), event.getHand());
-        Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, context, level);
-
-        if (recipe.isEmpty()) return;
         if (!level.isClientSide) {
+            Player player = event.getEntity();
+            BlockPos origin = event.getPos();
+            BlockState altar = level.getBlockState(origin);
+            ItemStack catalyst = event.getItemStack();
+            RecipeManager recipes = level.getRecipeManager();
+
+            RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
+            RitualRecipeContext context = new RitualRecipeContext(altar, origin, catalyst, level, event.getEntity(), event.getHand());
+            Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, context, level);
+
+            if (recipe.isEmpty()) return;
+
             Entity entity = recipe.get().value().getResultEntity(context, level.registryAccess());
             if (entity == null) return;
+
             entity.setPos(origin.getX() + 0.5, origin.getY() + 1, origin.getZ() + 0.5);
             entity.setDeltaMovement(0, 0.20, 0);
             if (entity instanceof LivingEntity) {

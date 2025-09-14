@@ -56,7 +56,9 @@ public class RitualIngredient implements ICustomIngredient {
 
     @Override
     public boolean test(@NotNull ItemStack stack) {
-        return items.contains(stack.getItemHolder()) && stack.getCount() >= count && components.test(stack);
+        return (items.size() == 0 || items.contains(stack.getItemHolder()))
+               && stack.getCount() >= count
+               && components.test(stack);
     }
 
     @Nonnull

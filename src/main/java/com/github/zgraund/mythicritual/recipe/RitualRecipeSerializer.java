@@ -25,7 +25,7 @@ public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
                     Codec.pair(
                             Vec3i.CODEC.fieldOf("position").codec(),
                             RitualIngredient.CODEC.codec().listOf().fieldOf("offerings").codec()
-                    ).listOf().fieldOf("locations").xmap(
+                    ).listOf().optionalFieldOf("locations", List.of()).xmap(
                             pairs -> pairs.stream().collect(Pair.toMap()),
                             map -> map.entrySet().stream().map(e -> Pair.of(e.getKey(), e.getValue())).toList()
 
