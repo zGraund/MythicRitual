@@ -2,7 +2,8 @@ package com.github.zgraund.mythicritual.render;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Create a drawable sprite from a png file, the texture is expected to be a vertical spritesheet.
@@ -24,7 +25,7 @@ public record AnimatedSpriteRenderer(ResourceLocation sprite, int ticksPerFrame,
         return (int) ((System.currentTimeMillis() / ticksPerFrame) % maxFrames);
     }
 
-    public void draw(@NotNull GuiGraphics guiGraphics, int screenX, int screenY, int screenZ) {
+    public void draw(@Nonnull GuiGraphics guiGraphics, int screenX, int screenY, int screenZ) {
         guiGraphics.blitSprite(
                 sprite, textureWidth, textureHeight,
                 0, frameHeight * getFrame(),
@@ -32,11 +33,11 @@ public record AnimatedSpriteRenderer(ResourceLocation sprite, int ticksPerFrame,
                 frameWidth, frameHeight);
     }
 
-    public void draw(@NotNull GuiGraphics guiGraphics, int screenX, int screenY) {
+    public void draw(GuiGraphics guiGraphics, int screenX, int screenY) {
         draw(guiGraphics, screenX, screenY, 0);
     }
 
-    public void draw(@NotNull GuiGraphics guiGraphics) {
+    public void draw(GuiGraphics guiGraphics) {
         draw(guiGraphics, 0, 0, 0);
     }
 

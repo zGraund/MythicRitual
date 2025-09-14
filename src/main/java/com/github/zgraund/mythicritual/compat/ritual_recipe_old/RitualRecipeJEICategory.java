@@ -26,7 +26,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -58,7 +60,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     private final int height = 144;
     private final int ingListCol = 8;
 
-    public RitualRecipeJEICategory(@NotNull IGuiHelper helper) {
+    public RitualRecipeJEICategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, width, height);
         this.icon = helper.drawableBuilder(ICON, 0, 0, 16, 16).setTextureSize(16, 16).build();
         this.guiHelper = helper;
@@ -68,7 +70,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void createRecipeExtras(@NotNull IRecipeExtrasBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void createRecipeExtras(IRecipeExtrasBuilder builder, RitualRecipe recipe, IFocusGroup focuses) {
         Component text = Component.literal("Ritual Offerings: ");
         builder.addText(text, 108, 20)
                .setPosition(1, 54)
@@ -79,7 +81,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, RitualRecipe recipe, IFocusGroup focuses) {
         builder.addInputSlot(19, 19)
                .setStandardSlotBackground()
                .addItemStack(recipe.catalyst())
@@ -112,7 +114,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void draw(@NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(RitualRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 //        background.draw(guiGraphics);
         IDrawableStatic arrow = guiHelper.getRecipeArrow();
 //        arrow.draw(guiGraphics, 43, 18);
@@ -126,7 +128,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public void getTooltip(ITooltipBuilder tooltip, RitualRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (infoIconX <= mouseX && infoIconX + infoIcon.getWidth() >= mouseX && infoIconY <= mouseY && infoIconY + infoIcon.getHeight() >= mouseY) {
             tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
         }

@@ -16,7 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -36,7 +38,7 @@ public record ItemRitualRecipeOffering(
 
     @Override
     @Nonnull
-    public Boolean test(@NotNull EntityConsumer entityConsumer) {
+    public Boolean test(EntityConsumer entityConsumer) {
         Entity entity = entityConsumer.entity();
         int used = entityConsumer.used();
         if (!(entity instanceof ItemEntity itemEntity)) return false;
@@ -46,7 +48,7 @@ public record ItemRitualRecipeOffering(
 
     @Contract(" -> new")
     @Override
-    public @NotNull RitualRecipeOffering copy() {
+    public RitualRecipeOffering copy() {
         return new ItemRitualRecipeOffering(this.type, this.quantity, this.offset);
     }
 

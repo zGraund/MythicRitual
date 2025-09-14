@@ -23,31 +23,31 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = MythicRitual.MOD_ID)
 public class ModEvents {
     @SubscribeEvent
-    public static void useItemOnBlock(PlayerInteractEvent.@NotNull RightClickBlock event) {
+    public static void useItemOnBlock(@Nonnull PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() == InteractionHand.OFF_HAND) return;
 
         Level level = event.getLevel();
+        Player player = event.getEntity();
+        BlockPos origin = event.getPos();
+        BlockState altar = level.getBlockState(origin);
+        ItemStack catalyst = event.getItemStack();
+        RecipeManager recipes = level.getRecipeManager();
+
+        RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
+        RitualRecipeContext context = new RitualRecipeContext(altar, origin, catalyst, level, event.getEntity(), event.getHand());
+        Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, context, level);
+
+        if (recipe.isEmpty()) return;
+
         if (!level.isClientSide) {
-            Player player = event.getEntity();
-            BlockPos origin = event.getPos();
-            BlockState altar = level.getBlockState(origin);
-            ItemStack catalyst = event.getItemStack();
-            RecipeManager recipes = level.getRecipeManager();
-
-            RecipeType<RitualRecipe> type = ModRecipes.RITUAL_RECIPE_TYPE.get();
-            RitualRecipeContext context = new RitualRecipeContext(altar, origin, catalyst, level, event.getEntity(), event.getHand());
-            Optional<RecipeHolder<RitualRecipe>> recipe = recipes.getRecipeFor(type, context, level);
-
-            if (recipe.isEmpty()) return;
-
             Entity entity = recipe.get().value().getResultEntity(context, level.registryAccess());
             if (entity == null) return;
 
@@ -68,13 +68,13 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public static void onEntitySacrifice(@NotNull LivingDropsEvent event) {
+    public static void onEntitySacrifice(@Nonnull LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.hasData(ModDataAttachments.IS_SACRIFICED)) event.setCanceled(true);
     }
 
     @SubscribeEvent
-    public static void onEntitySacrifice(@NotNull LivingExperienceDropEvent event) {
+    public static void onEntitySacrifice(@Nonnull LivingExperienceDropEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.hasData(ModDataAttachments.IS_SACRIFICED)) event.setCanceled(true);
     }

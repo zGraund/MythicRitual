@@ -23,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.EventHooks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +44,7 @@ public record RitualRecipe(
         boolean needSky
 ) implements Recipe<RitualRecipeContext> {
     @Override
-    public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
+    public boolean matches(@Nonnull RitualRecipeContext context, @Nonnull Level level) {
         if (!context.accept(this)) return false;
         if (locations.isEmpty()) return true;
         HashMap<Vec3i, List<OfferingHolder>> inputEntities = context.itemsByOffset(locations.keySet());
@@ -70,7 +69,7 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {
+    public ItemStack assemble(@Nonnull RitualRecipeContext context, @Nonnull HolderLookup.Provider registries) {
         context.consume();
         context.shrink(onTransmute, catalyst.count());
         context.player().swing(context.hand(), true);
@@ -102,7 +101,7 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+    public ItemStack getResultItem(@Nonnull HolderLookup.Provider registries) {
         return this.result.asItemStack();
     }
 

@@ -16,7 +16,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -35,7 +37,7 @@ public record MobRitualRecipeOffering(
 
     @Override
     @Nonnull
-    public Boolean test(@NotNull EntityConsumer entityConsumer) {
+    public Boolean test(EntityConsumer entityConsumer) {
         Entity entity = entityConsumer.entity();
         int used = entityConsumer.used();
         if (!(entity instanceof LivingEntity) || used >= 1) return false;
@@ -44,7 +46,7 @@ public record MobRitualRecipeOffering(
 
     @Contract(" -> new")
     @Override
-    public @NotNull RitualRecipeOffering copy() {
+    public RitualRecipeOffering copy() {
         return new MobRitualRecipeOffering(this.type, this.offset);
     }
 
@@ -61,7 +63,7 @@ public record MobRitualRecipeOffering(
 
     @Override
     @Nonnull
-    public List<Component> getTooltipLines(Item.TooltipContext tooltipContext, @Nullable Player player, @NotNull TooltipFlag tooltipFlag) {
+    public List<Component> getTooltipLines(Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
         List<Component> lines = new ArrayList<>(2);
         lines.add(this.getDisplayName());
         if (tooltipFlag.isAdvanced()) lines.add(Component.literal(this.type.toString()).withStyle(ChatFormatting.DARK_GRAY));

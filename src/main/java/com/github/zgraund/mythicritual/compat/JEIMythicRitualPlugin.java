@@ -18,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -35,12 +34,12 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerCategories(@NotNull IRecipeCategoryRegistration registration) {
+    public void registerCategories(@Nonnull IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new RitualRecipeJEICategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
-    public void registerExtraIngredients(@NotNull IExtraIngredientRegistration registration) {
+    public void registerExtraIngredients(@Nonnull IExtraIngredientRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -58,17 +57,17 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerIngredientAliases(@NotNull IIngredientAliasRegistration registration) {
+    public void registerIngredientAliases(@Nonnull IIngredientAliasRegistration registration) {
         registration.addAlias(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.SOUL.get()), "Soul");
     }
 
     @Override
-    public void registerItemSubtypes(@NotNull ISubtypeRegistration registration) {
+    public void registerItemSubtypes(@Nonnull ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(ModItems.SOUL.get(), new SoulSubtypeInterpreter());
     }
 
     @Override
-    public void registerRecipes(@NotNull IRecipeRegistration registration) {
+    public void registerRecipes(@Nonnull IRecipeRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -80,13 +79,13 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     public static class SoulSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
         @Override
         @Nullable
-        public Object getSubtypeData(@NotNull ItemStack ingredient, @NotNull UidContext context) {
+        public Object getSubtypeData(@Nonnull ItemStack ingredient, @Nonnull UidContext context) {
             return ingredient.get(ModDataComponents.SOUL_ENTITY_TYPE);
         }
 
         @Nonnull
         @Override
-        public String getLegacyStringSubtypeInfo(@NotNull ItemStack ingredient, @NotNull UidContext context) {
+        public String getLegacyStringSubtypeInfo(@Nonnull ItemStack ingredient, @Nonnull UidContext context) {
             return "";
         }
     }

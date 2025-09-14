@@ -5,7 +5,9 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -19,31 +21,31 @@ public record RitualRecipeIngredientHelper() implements IIngredientHelper<Ritual
 
     @Nonnull
     @Override
-    public String getDisplayName(@NotNull RitualRecipeOffering ingredient) {
+    public String getDisplayName(RitualRecipeOffering ingredient) {
         return ingredient.getDisplayName().getString();
     }
 
     @Nonnull
     @SuppressWarnings("removal")
     @Override
-    public String getUniqueId(@NotNull RitualRecipeOffering ingredient, @NotNull UidContext context) {
+    public String getUniqueId(RitualRecipeOffering ingredient, UidContext context) {
         return ingredient.type().toString();
     }
 
     @Nonnull
     @Override
-    public ResourceLocation getResourceLocation(@NotNull RitualRecipeOffering ingredient) {
+    public ResourceLocation getResourceLocation(RitualRecipeOffering ingredient) {
         return ingredient.type();
     }
 
     @Nonnull
     @Override
-    public RitualRecipeOffering copyIngredient(@NotNull RitualRecipeOffering ingredient) {
+    public RitualRecipeOffering copyIngredient(RitualRecipeOffering ingredient) {
         return ingredient.copy();
     }
 
     @Override
-    public long getAmount(@NotNull RitualRecipeOffering ingredient) {
+    public long getAmount(RitualRecipeOffering ingredient) {
         return ingredient.quantity();
     }
 

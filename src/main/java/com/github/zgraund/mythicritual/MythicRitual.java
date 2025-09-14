@@ -15,7 +15,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -25,7 +24,7 @@ public class MythicRitual {
     public static final String MOD_ID = "mythicritual";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public MythicRitual(@NotNull IEventBus modEventBus, ModContainer modContainer) {
+    public MythicRitual(@Nonnull IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 

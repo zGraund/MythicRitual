@@ -18,7 +18,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public record RitualRecipe(
         ActionOnTransmute onTransmute
 ) implements Recipe<RitualRecipeContext> {
     @Override
-    public boolean matches(@NotNull RitualRecipeContext context, @NotNull Level level) {
+    public boolean matches(RitualRecipeContext context, Level level) {
         if (!context.accept(this)) return false;
         HashMap<BlockPos, List<EntityConsumer>> inputEntities = context.entitiesByPosition(offerings);
         if (inputEntities.isEmpty()) return false;
@@ -59,14 +60,14 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack assemble(@NotNull RitualRecipeContext context, HolderLookup.@NotNull Provider registries) {
+    public ItemStack assemble(RitualRecipeContext context, HolderLookup.Provider registries) {
 //        return this.result.copy();
         return ItemStack.EMPTY.copy();
     }
 
     @Nonnull
-//    public ItemStack execute(@NotNull RitualRecipeContext context) {
-    public RitualRecipeOffering execute(@NotNull RitualRecipeContext context) {
+//    public ItemStack execute( RitualRecipeContext context) {
+    public RitualRecipeOffering execute(RitualRecipeContext context) {
         context.consume();
         context.shrink(onTransmute, catalyst.getCount());
         context.player().swing(context.hand(), true);
@@ -80,7 +81,7 @@ public record RitualRecipe(
 
     @Override
     @Nonnull
-    public ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
 //        return this.result;
         return ItemStack.EMPTY;
     }

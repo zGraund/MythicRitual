@@ -14,7 +14,6 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -39,7 +38,7 @@ public class RitualRecipeContext implements RecipeInput {
         this.hand = hand;
     }
 
-    public HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> itemsByOffset(@NotNull Set<Vec3i> offsets) {
+    public HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> itemsByOffset(@Nonnull Set<Vec3i> offsets) {
         for (Vec3i offset : offsets) {
             BlockPos target = RotationUtils.relativeTo(origin, offset, player.getDirection());
             entitiesFound.put(offset,
@@ -57,7 +56,7 @@ public class RitualRecipeContext implements RecipeInput {
         return entitiesFound;
     }
 
-    public boolean accept(@NotNull RitualRecipe recipe) {
+    public boolean accept(@Nonnull RitualRecipe recipe) {
         return altar.getBlock().defaultBlockState() == recipe.altar()
                && recipe.catalyst().test(catalyst)
                && (recipe.onTransmute() != ActionOnTransmute.DESTROY || catalyst.getDamageValue() == 0)

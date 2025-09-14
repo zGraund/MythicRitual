@@ -10,7 +10,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -22,20 +21,20 @@ public class SoulItem extends Item {
     }
 
     @Override
-    public boolean isFoil(@NotNull ItemStack stack) {
+    public boolean isFoil(@Nonnull ItemStack stack) {
         return hasEntity(stack);
     }
 
     @Override
     @Nonnull
-    public Component getName(@NotNull ItemStack stack) {
+    public Component getName(@Nonnull ItemStack stack) {
         if (hasEntity(stack)) return Component.translatable(getEntity(stack).getDescriptionId());
         return super.getName(stack);
     }
 
     @Override
     @Nonnull
-    public Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
+    public Optional<TooltipComponent> getTooltipImage(@Nonnull ItemStack stack) {
         EntityType<?> type = stack.get(ModDataComponents.SOUL_ENTITY_TYPE);
         if (type != null && Screen.hasShiftDown()) {
             return Optional.of(new EntityPreviewTooltip(type, 90));
@@ -44,7 +43,7 @@ public class SoulItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull TooltipContext context, @Nonnull List<Component> tooltipComponents, @Nonnull TooltipFlag tooltipFlag) {
         if (hasEntity(stack) && !tooltipFlag.hasShiftDown()) {
             tooltipComponents.add(Component.translatable("item.mythicritual.soul.preview_text").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
             if (tooltipFlag.isAdvanced()) {
@@ -54,11 +53,11 @@ public class SoulItem extends Item {
     }
 
     @Nonnull
-    private EntityType<?> getEntity(@NotNull ItemStack stack) {
+    private EntityType<?> getEntity(@Nonnull ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.SOUL_ENTITY_TYPE, EntityType.PIG);
     }
 
-    private boolean hasEntity(@NotNull ItemStack stack) {
+    private boolean hasEntity(@Nonnull ItemStack stack) {
         return stack.has(ModDataComponents.SOUL_ENTITY_TYPE);
     }
 }

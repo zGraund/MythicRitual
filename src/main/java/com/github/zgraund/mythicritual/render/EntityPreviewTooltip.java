@@ -11,19 +11,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+
+import javax.annotation.Nonnull;
 
 public record EntityPreviewTooltip(EntityType<?> type, int size) implements ClientTooltipComponent, TooltipComponent {
     @Override
     public int getHeight() {return size + 2;}
 
     @Override
-    public int getWidth(@NotNull Font font) {return size + 2;}
+    public int getWidth(@Nonnull Font font) {return size + 2;}
 
     @Override
-    public void renderImage(@NotNull Font font, int x, int y, @NotNull GuiGraphics guiGraphics) {
+    public void renderImage(@Nonnull Font font, int x, int y, @Nonnull GuiGraphics guiGraphics) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 

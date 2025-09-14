@@ -13,7 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public final class RitualRecipeContext implements RecipeInput {
     }
 
     @NonNull
-    public HashMap<BlockPos, List<EntityConsumer>> entitiesByPosition(@NotNull List<RitualRecipeOffering> ingredients) {
+    public HashMap<BlockPos, List<EntityConsumer>> entitiesByPosition(List<RitualRecipeOffering> ingredients) {
         HashMap<BlockPos, List<EntityConsumer>> out = new HashMap<>();
         for (RitualRecipeOffering ingredient : ingredients) {
             BlockPos target = RotationUtils.relativeTo(origin, ingredient.offset(), player.getDirection());
@@ -49,7 +50,7 @@ public final class RitualRecipeContext implements RecipeInput {
         return out;
     }
 
-    public boolean accept(@NotNull RitualRecipe recipe) {
+    public boolean accept(RitualRecipe recipe) {
         return altar.getBlock().defaultBlockState() == recipe.altar()
                && catalyst.is(recipe.catalyst().getItem())
                && (recipe.onTransmute() != ActionOnTransmute.DESTROY || catalyst.getDamageValue() == 0)

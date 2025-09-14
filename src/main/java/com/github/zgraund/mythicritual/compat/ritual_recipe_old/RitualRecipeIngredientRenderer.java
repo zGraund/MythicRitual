@@ -16,7 +16,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -31,7 +33,7 @@ public final class RitualRecipeIngredientRenderer implements IIngredientRenderer
     );
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, @NotNull RitualRecipeOffering ingredient) {
+    public void render(GuiGraphics guiGraphics, RitualRecipeOffering ingredient) {
         switch (ingredient) {
             case ItemRitualRecipeOffering i -> {
                 ItemStack item = i.asItemStack();
@@ -43,7 +45,7 @@ public final class RitualRecipeIngredientRenderer implements IIngredientRenderer
     }
 
     @Override
-    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RitualRecipeOffering ingredient, @NotNull TooltipFlag tooltipFlag) {
+    public void getTooltip(ITooltipBuilder tooltip, RitualRecipeOffering ingredient, TooltipFlag tooltipFlag) {
         List<Component> components = getTooltip(ingredient, tooltipFlag);
         tooltip.addAll(components);
         if (ingredient instanceof MobRitualRecipeOffering entity) {
@@ -58,7 +60,7 @@ public final class RitualRecipeIngredientRenderer implements IIngredientRenderer
 
     @Override
     @Nonnull
-    public @Unmodifiable List<Component> getTooltip(@NotNull RitualRecipeOffering ingredient, @NotNull TooltipFlag tooltipFlag) {
+    public @Unmodifiable List<Component> getTooltip(RitualRecipeOffering ingredient, TooltipFlag tooltipFlag) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);

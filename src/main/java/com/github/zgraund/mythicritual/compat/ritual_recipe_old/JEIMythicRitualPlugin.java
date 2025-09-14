@@ -15,7 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -31,12 +32,12 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerCategories(@NotNull IRecipeCategoryRegistration registration) {
+    public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new RitualRecipeJEICategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
-    public void registerIngredients(@NotNull IModIngredientRegistration registration) {
+    public void registerIngredients(IModIngredientRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
         RecipeManager recipeManager = level.getRecipeManager();
@@ -59,7 +60,7 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerRecipes(@NotNull IRecipeRegistration registration) {
+    public void registerRecipes(IRecipeRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 

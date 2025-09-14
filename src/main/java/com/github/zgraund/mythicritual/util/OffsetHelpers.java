@@ -3,7 +3,6 @@ package com.github.zgraund.mythicritual.util;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class OffsetHelpers {
     @Nonnull
-    public static MutableComponent asComponent(@NotNull Vec3i offset) {
+    public static MutableComponent asComponent(@Nonnull Vec3i offset) {
         List<String> out = new ArrayList<>();
         int x = offset.getX();
         int y = offset.getY();
@@ -22,7 +21,7 @@ public class OffsetHelpers {
         return Component.literal(String.join(", ", out));
     }
 
-    public static boolean isDefault(@NotNull Vec3i offset) {
+    public static boolean isDefault(@Nonnull Vec3i offset) {
         return offset.equals(new Vec3i(0, 1, 0));
     }
 }
