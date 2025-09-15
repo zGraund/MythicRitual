@@ -62,6 +62,7 @@ public class RitualRecipeContext implements RecipeInput {
                && (recipe.onTransmute() != ActionOnTransmute.DESTROY || catalyst.getDamageValue() == 0)
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals))
+
                && (recipe.biomes().size() == 0 || recipe.biomes().contains(level.getBiome(origin)));
     }
 
@@ -113,8 +114,6 @@ public class RitualRecipeContext implements RecipeInput {
     public InteractionHand hand() {return hand;}
 
     public Player player() {return player;}
-
-    public HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> validatedInput() {return entitiesFound;}
 
     @Override
     public String toString() {
