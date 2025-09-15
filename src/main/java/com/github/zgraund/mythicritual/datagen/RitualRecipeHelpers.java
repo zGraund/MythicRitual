@@ -108,13 +108,11 @@ public class RitualRecipeHelpers {
 
         @Nonnull
         @Override
-        public net.minecraft.data.recipes.RecipeBuilder unlockedBy(@Nonnull String name, @Nonnull Criterion<?> criterion) {
-            return this;
-        }
+        public RecipeBuilder unlockedBy(@Nonnull String name, @Nonnull Criterion<?> criterion) {return this;} // no-op
 
         @Nonnull
         @Override
-        public net.minecraft.data.recipes.RecipeBuilder group(@Nullable String groupName) {return this;} // no-op
+        public RecipeBuilder group(@Nullable String groupName) {return this;} // no-op
 
         @Nonnull
         @Override

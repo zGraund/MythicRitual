@@ -3,6 +3,7 @@ package com.github.zgraund.mythicritual.recipe;
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.attachment.ModDataAttachments;
 import com.github.zgraund.mythicritual.component.ModDataComponents;
+import com.github.zgraund.mythicritual.damage.ModDamageTypes;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.item.ModItems;
 import net.minecraft.ChatFormatting;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -154,13 +156,13 @@ public record RitualRecipe(
     public record OfferingHolder(Entity original, ItemStack normalized) {
         public void shrink(int amount) {this.normalized.shrink(amount);}
 
-        public void consume() {
+        public void consume(@Nullable Player player) {
             switch (original) {
                 case ItemEntity i -> i.getItem().shrink(Math.abs(normalized.getCount() - i.getItem().getCount()));
                 case LivingEntity l -> {
                     if (normalized.getCount() > 0) return;
                     l.setData(ModDataAttachments.IS_SACRIFICED, true);
-                    l.hurt(new DamageSources(original.level().registryAccess()).magic(), Float.MAX_VALUE);
+                    l.hurt(new DamageSources(original.level().registryAccess()).source(ModDamageTypes.RITUAL_DAMAGE, player), Float.MAX_VALUE);
                 }
                 default -> original.kill();
             }

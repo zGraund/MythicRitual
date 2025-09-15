@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
@@ -51,9 +52,9 @@ public class JEIMythicRitualPlugin implements IModPlugin {
                 .flatMap(recipe -> Stream.concat(recipe.getCustomIngredients(), Stream.of(recipe.result())))
                 .flatMap(RitualIngredient::getItems)
                 .filter(item -> item.is(ModItems.SOUL))
-                .toList();
+                .collect(Collectors.toList());
+        souls.add(new ItemStack(ModItems.SOUL.get()));
         registration.addExtraItemStacks(souls);
-        registration.addExtraItemStacks(List.of(new ItemStack(ModItems.SOUL.get())));
     }
 
     @Override

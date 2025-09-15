@@ -47,6 +47,9 @@ public class ModEvents {
 
         if (recipe.isEmpty()) return;
 
+        event.setCancellationResult(InteractionResult.SUCCESS);
+        event.setCanceled(true);
+
         if (!level.isClientSide) {
             Entity entity = recipe.get().value().getResultEntity(context, level.registryAccess());
             if (entity == null) return;
@@ -62,9 +65,6 @@ public class ModEvents {
             }
             level.addFreshEntity(entity);
         }
-
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        event.setCanceled(true);
     }
 
     @SubscribeEvent

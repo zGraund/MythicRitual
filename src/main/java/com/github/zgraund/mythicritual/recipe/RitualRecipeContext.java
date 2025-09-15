@@ -66,7 +66,7 @@ public class RitualRecipeContext implements RecipeInput {
     }
 
     public void consume() {
-        entitiesFound.values().stream().flatMap(List::stream).forEach(RitualRecipe.OfferingHolder::consume);
+        entitiesFound.values().stream().flatMap(List::stream).forEach(holder -> holder.consume(player));
     }
 
     public void shrink(ActionOnTransmute action, int quantity) {
