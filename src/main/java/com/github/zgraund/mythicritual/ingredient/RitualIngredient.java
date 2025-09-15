@@ -5,29 +5,25 @@ import com.github.zgraund.mythicritual.item.ModItems;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class RitualIngredient implements ICustomIngredient {
     public static final RitualIngredient EMPTY = new RitualIngredient(HolderSet.empty(), DataComponentPredicate.EMPTY, 0);
@@ -45,13 +41,13 @@ public class RitualIngredient implements ICustomIngredient {
     private final HolderSet<Item> items;
     private final DataComponentPredicate components;
     private final int count;
-    private final ItemStack[] stacks;
+    @Nullable
+    private ItemStack[] stacks;
 
     public RitualIngredient(@Nonnull ItemsHolder holder, int count) {
         this.items = holder.items;
         this.components = holder.components;
         this.count = count;
-        this.stacks = this.items.stream().map(i -> new ItemStack(i, 1, components.asPatch())).toArray(ItemStack[]::new);
     }
 
     public RitualIngredient(HolderSet<Item> items, DataComponentPredicate components, int count) {
@@ -59,32 +55,23 @@ public class RitualIngredient implements ICustomIngredient {
     }
 
     @Nonnull
-    @Contract("_ -> new")
-    public static RitualIngredient from(EntityType<?> entity) {return new RitualIngredient(ItemsHolder.fromEntity(entity), 1);}
+    public static RitualIngredient of(EntityType<?> entity) {return new RitualIngredient(ItemsHolder.fromEntity(entity), 1);}
 
     @Nonnull
-    @Contract("_ -> new")
-    public static RitualIngredient from(@Nonnull Item item) {return from(item, 1);}
+    public static RitualIngredient of(@Nonnull ItemLike... items) {return of(1, items);}
+
+    @Nonnull
+    public static RitualIngredient of(int quantity, @Nonnull ItemLike... items) {return of(quantity, DataComponentPredicate.EMPTY, items);}
 
     @SuppressWarnings("deprecation")
     @Nonnull
-    @Contract("_, _ -> new")
-    public static RitualIngredient from(@Nonnull Item item, int quantity) {
-        return new RitualIngredient(HolderSet.direct(item.builtInRegistryHolder()), DataComponentPredicate.EMPTY, quantity);
-    }
-
-    @Nonnull
-    public static RitualIngredient from(TagKey<Item> tag) {return from(tag, 1);}
-
-    @Nonnull
-    public static RitualIngredient from(TagKey<Item> tag, int quantity) {
-        List<Holder<Item>> items = StreamSupport.stream(BuiltInRegistries.ITEM.getTagOrEmpty(tag).spliterator(), false).toList();
-        return new RitualIngredient(HolderSet.direct(items), DataComponentPredicate.EMPTY, quantity);
+    public static RitualIngredient of(int quantity, DataComponentPredicate components, @Nonnull ItemLike... items) {
+        return new RitualIngredient(HolderSet.direct(Arrays.stream(items).map(ItemLike::asItem).map(Item::builtInRegistryHolder).toList()), components, quantity);
     }
 
     @Override
     public boolean test(@Nonnull ItemStack stack) {
-        return (items.size() == 0 || items.contains(stack.getItemHolder()))
+        return ((items.size() == 0 && stack.isEmpty()) || items.contains(stack.getItemHolder()))
                && stack.getCount() >= count
                && components.test(stack);
     }
@@ -92,6 +79,7 @@ public class RitualIngredient implements ICustomIngredient {
     @Nonnull
     @Override
     public Stream<ItemStack> getItems() {
+        if (this.stacks == null) this.stacks = this.items.stream().map(i -> new ItemStack(i, count, components.asPatch())).toArray(ItemStack[]::new);
         return Arrays.stream(stacks);
     }
 
@@ -114,7 +102,7 @@ public class RitualIngredient implements ICustomIngredient {
 
     public int count() {return count;}
 
-    public ItemStack asItemStack() {return Arrays.stream(stacks).findFirst().orElse(ItemStack.EMPTY);}
+    public ItemStack asItemStack() {return getItems().findFirst().orElse(ItemStack.EMPTY);}
 
     @Nullable
     public EntityType<?> entityType() {

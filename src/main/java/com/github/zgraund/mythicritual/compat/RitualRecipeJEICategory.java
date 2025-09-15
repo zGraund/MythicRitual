@@ -76,16 +76,16 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull RitualRecipe recipe, @Nonnull IFocusGroup focuses) {
         builder.addInputSlot(19, 19)
                .setStandardSlotBackground()
-               .addItemStack(recipe.catalyst().asItemStack())
+               .addItemStacks(recipe.catalyst().getItems().toList())
                .addRichTooltipCallback((recipeSlotView, tooltip) -> {
                    Optional<Component> tt = recipe.catalystDescription();
                    tt.ifPresent(component -> tooltip.getLines().addAll(2, List.of(Either.left(component), Either.left(Component.empty()))));
                });
         builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
-        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result().asItemStack());
+        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
         recipe.locations().values().forEach(ingredients -> ingredients.forEach(
-                ingredient -> builder.addInputSlot().addItemStack(ingredient.asItemStack())
+                ingredient -> builder.addInputSlot().addItemStacks(ingredient.getItems().toList())
         ));
     }
 
