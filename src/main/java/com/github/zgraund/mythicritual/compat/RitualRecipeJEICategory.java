@@ -4,7 +4,6 @@ import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.recipe.ActionOnTransmute;
 import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
-import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Optional;
 
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
@@ -74,13 +72,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     @Override
     public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull RitualRecipe recipe, @Nonnull IFocusGroup focuses) {
-        builder.addInputSlot(19, 19)
-               .setStandardSlotBackground()
-               .addItemStacks(recipe.catalyst().getItems().toList())
-               .addRichTooltipCallback((recipeSlotView, tooltip) -> {
-                   Optional<Component> tt = recipe.catalystDescription();
-                   tt.ifPresent(component -> tooltip.getLines().addAll(2, List.of(Either.left(component), Either.left(Component.empty()))));
-               });
+        builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStacks(recipe.catalyst().getItems().toList());
         builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
@@ -110,7 +102,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
         }
         if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
             if (recipe.onTransmute() != ActionOnTransmute.NONE) {
-                tooltip.add(Component.literal("The catalyst will be consumed or damaged!").withStyle(ChatFormatting.RED));
+                tooltip.add(recipe.catalystDescription().orElse(Component.empty()));
             } else {
                 tooltip.add(Component.literal("The catalyst is safe!").withStyle(ChatFormatting.GREEN));
             }
