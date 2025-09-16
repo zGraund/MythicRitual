@@ -1,13 +1,10 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.ActionOnTransmute;
-import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.ItemRitualRecipeOffering;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
+import com.github.zgraund.mythicritual.recipe.ActionOnTransmute;
+import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
 import com.mojang.datafixers.util.Either;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -25,19 +22,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
     public static final ResourceLocation TEXTURE = MythicRitual.ID("textures/gui/gui_test_2.png");
+    public static final ResourceLocation ICON = MythicRitual.ID("textures/gui/ritual_recipe/ritual_icon.png");
     public static final RecipeType<RitualRecipe> TYPE = new RecipeType<>(UID, RitualRecipe.class);
 
     private final int hammerX = 38;
@@ -58,9 +52,9 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     private final int height = 144;
     private final int ingListCol = 8;
 
-    public RitualRecipeJEICategory(@NotNull IGuiHelper helper) {
+    public RitualRecipeJEICategory(@Nonnull IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, width, height);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ANVIL));
+        this.icon = helper.drawableBuilder(ICON, 0, 0, 16, 16).setTextureSize(16, 16).build();
         this.guiHelper = helper;
         this.infoIcon = helper.drawableBuilder(MythicRitual.ID("textures/gui/sprites/info_icon_small.png"), 0, 0, 16, 16)
                               .setTextureSize(16, 16)
@@ -68,51 +62,35 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void createRecipeExtras(@NotNull IRecipeExtrasBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void createRecipeExtras(@Nonnull IRecipeExtrasBuilder builder, @Nonnull RitualRecipe recipe, @Nonnull IFocusGroup focuses) {
         Component text = Component.literal("Ritual Offerings: ");
         builder.addText(text, 108, 20)
                .setPosition(1, 54)
                .setTextAlignment(VerticalAlignment.CENTER);
 
         List<IRecipeSlotDrawable> inputSlots = builder.getRecipeSlots().getSlots(RecipeIngredientRole.INPUT);
-        builder.addScrollGridWidget(inputSlots.subList(1, inputSlots.size()), ingListCol, 4).setPosition(0, 72);
+        builder.addScrollGridWidget(inputSlots.subList(2, inputSlots.size()), ingListCol, 4).setPosition(0, 72);
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull RitualRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull RitualRecipe recipe, @Nonnull IFocusGroup focuses) {
         builder.addInputSlot(19, 19)
                .setStandardSlotBackground()
-               .addItemStack(recipe.catalyst())
+               .addItemStacks(recipe.catalyst().getItems().toList())
                .addRichTooltipCallback((recipeSlotView, tooltip) -> {
                    Optional<Component> tt = recipe.catalystDescription();
                    tt.ifPresent(component -> tooltip.getLines().addAll(2, List.of(Either.left(component), Either.left(Component.empty()))));
                });
-        builder.addSlot(RecipeIngredientRole.CATALYST, 73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
-//        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStack(recipe.result());
-        builder.addOutputSlot(127, 19).setOutputSlotBackground().addIngredient(RitualRecipeJEIIngredient.TYPE, recipe.result());
-        if (recipe.result() instanceof ItemRitualRecipeOffering i)
-            builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addIngredient(VanillaTypes.ITEM_STACK, i.asItemStack());
+        builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
+        builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
-        List<ItemRitualRecipeOffering> items = new ArrayList<>();
-        List<MobRitualRecipeOffering> mobs = new ArrayList<>();
-        recipe.offerings().forEach(a -> {
-            if (a instanceof MobRitualRecipeOffering x) mobs.add(x);
-            else if (a instanceof ItemRitualRecipeOffering y) items.add(y);
-        });
-        for (ItemRitualRecipeOffering ing : items) {
-            builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
-            builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredient(VanillaTypes.ITEM_STACK, ing.asItemStack());
-        }
-        for (int x = 0; x < (ingListCol - (items.size() % ingListCol)) % ingListCol; x++) {
-            builder.addInputSlot().addItemStack(ItemStack.EMPTY);
-        }
-        for (MobRitualRecipeOffering ing : mobs) {
-            builder.addInputSlot().addIngredient(RitualRecipeJEIIngredient.TYPE, ing);
-        }
+        recipe.locations().values().forEach(ingredients -> ingredients.forEach(
+                ingredient -> builder.addInputSlot().addItemStacks(ingredient.getItems().toList())
+        ));
     }
 
     @Override
-    public void draw(@NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(@Nonnull RitualRecipe recipe, @Nonnull IRecipeSlotsView recipeSlotsView, @Nonnull GuiGraphics guiGraphics, double mouseX, double mouseY) {
 //        background.draw(guiGraphics);
         IDrawableStatic arrow = guiHelper.getRecipeArrow();
 //        arrow.draw(guiGraphics, 43, 18);
@@ -126,7 +104,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     }
 
     @Override
-    public void getTooltip(@NotNull ITooltipBuilder tooltip, @NotNull RitualRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public void getTooltip(@Nonnull ITooltipBuilder tooltip, @Nonnull RitualRecipe recipe, @Nonnull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (infoIconX <= mouseX && infoIconX + infoIcon.getWidth() >= mouseX && infoIconY <= mouseY && infoIconY + infoIcon.getHeight() >= mouseY) {
             tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
         }

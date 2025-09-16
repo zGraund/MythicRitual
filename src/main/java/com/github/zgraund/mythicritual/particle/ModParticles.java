@@ -1,4 +1,4 @@
-package com.github.zgraund.mythicritual.registries;
+package com.github.zgraund.mythicritual.particle;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import net.minecraft.core.particles.ParticleType;

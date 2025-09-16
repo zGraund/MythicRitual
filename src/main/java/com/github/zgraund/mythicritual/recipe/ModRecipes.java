@@ -1,8 +1,6 @@
-package com.github.zgraund.mythicritual.registries;
+package com.github.zgraund.mythicritual.recipe;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.RitualRecipeSerializer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;

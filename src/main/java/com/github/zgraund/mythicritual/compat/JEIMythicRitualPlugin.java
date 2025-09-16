@@ -1,25 +1,28 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipes.RitualRecipe;
-import com.github.zgraund.mythicritual.recipes.ingredients.MobRitualRecipeOffering;
-import com.github.zgraund.mythicritual.recipes.ingredients.RitualRecipeOffering;
-import com.github.zgraund.mythicritual.registries.ModRecipes;
+import com.github.zgraund.mythicritual.component.ModDataComponents;
+import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
+import com.github.zgraund.mythicritual.item.ModItems;
+import com.github.zgraund.mythicritual.recipe.ModRecipes;
+import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
@@ -28,54 +31,63 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     @Override
     @Nonnull
     public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(MythicRitual.MOD_ID, "jei_plugin");
+        return MythicRitual.ID("jei_plugin");
     }
 
     @Override
-    public void registerCategories(@NotNull IRecipeCategoryRegistration registration) {
+    public void registerCategories(@Nonnull IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new RitualRecipeJEICategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
-    public void registerIngredients(@NotNull IModIngredientRegistration registration) {
+    public void registerExtraIngredients(@Nonnull IExtraIngredientRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
-        RecipeManager recipeManager = level.getRecipeManager();
-        List<RecipeHolder<RitualRecipe>> recipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get());
 
-        List<RitualRecipeOffering> recipeOfferings = recipes
+        RecipeManager recipeManager = level.getRecipeManager();
+        List<ItemStack> souls = recipeManager
+                .getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get())
                 .stream()
                 .map(RecipeHolder::value)
-                .flatMap(recipe -> Stream.concat(recipe.offerings().stream(), Stream.of(recipe.result())))
-                .filter(MobRitualRecipeOffering.class::isInstance)
-                .toList();
-
-        registration.register(
-                RitualRecipeJEIIngredient.TYPE,
-                recipeOfferings,
-                new RitualRecipeIngredientHelper(),
-                new RitualRecipeIngredientRenderer(),
-                RitualRecipeOffering.CODEC
-        );
+                .flatMap(recipe -> Stream.concat(recipe.getCustomIngredients(), Stream.of(recipe.result())))
+                .flatMap(RitualIngredient::getItems)
+                .filter(item -> item.is(ModItems.SOUL))
+                .collect(Collectors.toList());
+        souls.add(new ItemStack(ModItems.SOUL.get()));
+        registration.addExtraItemStacks(souls);
     }
 
     @Override
-    public void registerRecipes(@NotNull IRecipeRegistration registration) {
+    public void registerIngredientAliases(@Nonnull IIngredientAliasRegistration registration) {
+        registration.addAlias(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.SOUL.get()), "Soul");
+    }
+
+    @Override
+    public void registerItemSubtypes(@Nonnull ISubtypeRegistration registration) {
+        registration.registerSubtypeInterpreter(ModItems.SOUL.get(), new SoulSubtypeInterpreter());
+    }
+
+    @Override
+    public void registerRecipes(@Nonnull IRecipeRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 
         RecipeManager recipeManager = level.getRecipeManager();
         List<RitualRecipe> ritualRecipes = recipeManager.getAllRecipesFor(ModRecipes.RITUAL_RECIPE_TYPE.get()).stream().map(RecipeHolder::value).toList();
         registration.addRecipes(RitualRecipeJEICategory.TYPE, ritualRecipes);
-        ritualRecipes.forEach(recipe -> {
-            List<RitualRecipeOffering> ingredients = recipe.offerings().stream().filter(MobRitualRecipeOffering.class::isInstance).toList();
-            if (!ingredients.isEmpty()) {
-                registration.addIngredientInfo(
-                        ingredients,
-                        RitualRecipeJEIIngredient.TYPE,
-                        Component.literal("This soul represent the Living Entity that must be sacrificed in the ritual.")
-                );
-            }
-        });
+    }
+
+    public static class SoulSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
+        @Override
+        @Nullable
+        public Object getSubtypeData(@Nonnull ItemStack ingredient, @Nonnull UidContext context) {
+            return ingredient.get(ModDataComponents.SOUL_ENTITY_TYPE);
+        }
+
+        @Nonnull
+        @Override
+        public String getLegacyStringSubtypeInfo(@Nonnull ItemStack ingredient, @Nonnull UidContext context) {
+            return "";
+        }
     }
 }

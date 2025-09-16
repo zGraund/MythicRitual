@@ -11,21 +11,28 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import javax.annotation.Nonnull;
+
 public record EntityPreviewTooltip(EntityType<?> type, int size) implements ClientTooltipComponent, TooltipComponent {
     @Override
-    public int getHeight() {return size;}
+    public int getHeight() {return size + 2;}
 
     @Override
-    public int getWidth(@NotNull Font font) {return size;}
+    public int getWidth(@Nonnull Font font) {return size + 2;}
 
     @Override
-    public void renderImage(@NotNull Font font, int x, int y, @NotNull GuiGraphics guiGraphics) {
+    public void renderImage(@Nonnull Font font, int x, int y, @Nonnull GuiGraphics guiGraphics) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
+
+        int lineColor = 0xFF8C00BF;
+        guiGraphics.vLine(x, y, y + size, lineColor);           // Vertical left
+        guiGraphics.vLine(x + size, y, y + size, lineColor); // Vertical right
+        guiGraphics.hLine(x, x + size, y, lineColor);           // Horizontal top
+        guiGraphics.hLine(x, x + size, y + size, lineColor); // Horizontal bottom
 
         Entity e = type.create(level);
         if (!(e instanceof LivingEntity entity)) return;
