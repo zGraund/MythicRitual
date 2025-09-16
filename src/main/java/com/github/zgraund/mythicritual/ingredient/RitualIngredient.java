@@ -58,6 +58,15 @@ public class RitualIngredient implements ICustomIngredient {
     public static RitualIngredient of(EntityType<?> entity) {return new RitualIngredient(ItemsHolder.fromEntity(entity), 1);}
 
     @Nonnull
+    public static RitualIngredient of(@Nonnull ItemStack itemStack) {
+        return new RitualIngredient(
+                HolderSet.direct(itemStack.getItemHolder()),
+                DataComponentPredicate.allOf(itemStack.getComponents()),
+                itemStack.getCount()
+        );
+    }
+
+    @Nonnull
     public static RitualIngredient of(@Nonnull ItemLike... items) {return of(1, items);}
 
     @Nonnull

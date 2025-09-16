@@ -28,6 +28,12 @@ public record EntityPreviewTooltip(EntityType<?> type, int size) implements Clie
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 
+        int lineColor = 0xFF8C00BF;
+        guiGraphics.vLine(x, y, y + size, lineColor);           // Vertical left
+        guiGraphics.vLine(x + size, y, y + size, lineColor); // Vertical right
+        guiGraphics.hLine(x, x + size, y, lineColor);           // Horizontal top
+        guiGraphics.hLine(x, x + size, y + size, lineColor); // Horizontal bottom
+
         Entity e = type.create(level);
         if (!(e instanceof LivingEntity entity)) return;
 
@@ -49,12 +55,6 @@ public record EntityPreviewTooltip(EntityType<?> type, int size) implements Clie
 
         int cx = x + size / 2;
         int cy = (int) (y + (size + (height * scale)) / 2);
-
-        int lineColor = 0xFF8C00BF;
-        guiGraphics.vLine(x, y, y + size, lineColor);           // Vertical left
-        guiGraphics.vLine(x + size, y, y + size, lineColor); // Vertical right
-        guiGraphics.hLine(x, x + size, y, lineColor);           // Horizontal top
-        guiGraphics.hLine(x, x + size, y + size, lineColor); // Horizontal bottom
 
         guiGraphics.enableScissor(x, y, x + size, y + size);
         InventoryScreen.renderEntityInInventory(

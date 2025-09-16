@@ -90,7 +90,6 @@ public class RitualRecipeHelpers {
     }
 
     public static class Builder implements RecipeBuilder, RequireAltar, RequireResult {
-        private static final Vec3i DEFAULT_OFFSET = new Vec3i(0, 1, 0);
         private final HolderLookup.Provider provider;
         private final Map<Vec3i, List<RitualIngredient>> locations = new HashMap<>();
         private BlockState altar;
@@ -144,11 +143,11 @@ public class RitualRecipeHelpers {
         }
 
         public Builder addOfferings(RitualIngredient... locations) {
-            return addOfferings(DEFAULT_OFFSET, locations);
+            return addOfferings(0, 1, 0, locations);
         }
 
-        public Builder addOfferings(Vec3i offset, RitualIngredient... locations) {
-            this.locations.computeIfAbsent(offset, vec3i -> new ArrayList<>()).addAll(List.of(locations));
+        public Builder addOfferings(int xOffset, int yOffset, int zOffset, RitualIngredient... locations) {
+            this.locations.computeIfAbsent(new Vec3i(xOffset, yOffset, zOffset), vec3i -> new ArrayList<>()).addAll(List.of(locations));
             return this;
         }
 
