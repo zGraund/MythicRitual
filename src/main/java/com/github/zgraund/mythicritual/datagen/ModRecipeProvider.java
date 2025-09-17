@@ -47,7 +47,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_ROD))
                            .catalyst(RitualIngredient.of(axe))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.DESTROY)
+                           .onTransmute(ActionOnTransmute.DESTROY_CATALYST)
                            .save(recipeOutput, MythicRitual.ID("axe_unbreakable"));
 
         // Tool without components, action: use 1 durability
@@ -56,7 +56,16 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_POWDER))
                            .catalyst(RitualIngredient.of(Items.DIAMOND_AXE))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.CONSUME)
+                           .onTransmute(ActionOnTransmute.CONSUME_CATALYST)
                            .save(recipeOutput, MythicRitual.ID("axe_normal"));
+
+        RitualRecipeHelpers
+                .builder(provider)
+                .altar(Blocks.IRON_BLOCK)
+                .result(RitualIngredient.of(Items.ANVIL))
+                .addOfferings(RitualIngredient.of(2, Items.IRON_BLOCK), RitualIngredient.of(4, Items.IRON_INGOT))
+                .effect(EffectHelper.PARTICLES)
+                .onTransmute(ActionOnTransmute.CONSUME_CATALYST, ActionOnTransmute.PLACE_RESULT)
+                .save(recipeOutput, MythicRitual.ID("anvil_in_place"));
     }
 }

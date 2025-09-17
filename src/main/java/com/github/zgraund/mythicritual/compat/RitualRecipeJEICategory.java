@@ -1,9 +1,9 @@
 package com.github.zgraund.mythicritual.compat;
 
 import com.github.zgraund.mythicritual.MythicRitual;
-import com.github.zgraund.mythicritual.recipe.ActionOnTransmute;
 import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
+import com.github.zgraund.mythicritual.util.OffsetHelpers;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -17,7 +17,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -76,8 +75,11 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
         builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
-        recipe.locations().values().forEach(ingredients -> ingredients.forEach(
-                ingredient -> builder.addInputSlot().addItemStacks(ingredient.getItems().toList())
+        recipe.locations().forEach((offset, ingredients) -> ingredients.forEach(
+                ingredient -> builder.addInputSlot().addItemStacks(ingredient.getItems().toList()).addRichTooltipCallback(
+                        (recipeSlotView, tooltip) -> {
+                            tooltip.add(OffsetHelpers.asComponent(offset));
+                        })
         ));
     }
 
@@ -88,11 +90,11 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 //        arrow.draw(guiGraphics, 43, 18);
         arrow.draw(guiGraphics, 95, 18);
         infoIcon.draw(guiGraphics, infoIconX, infoIconY);
-        if (recipe.onTransmute() != ActionOnTransmute.NONE) {
-            consume.draw(guiGraphics, hammerX, hammerY);
-        } else {
-            save.draw(guiGraphics, hammerX, hammerY);
-        }
+//        if (recipe.onTransmute() != ActionOnTransmute.NONE) {
+//            consume.draw(guiGraphics, hammerX, hammerY);
+//        } else {
+        save.draw(guiGraphics, hammerX, hammerY);
+//        }
     }
 
     @Override
@@ -101,11 +103,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
             tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
         }
         if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
-            if (recipe.onTransmute() != ActionOnTransmute.NONE) {
-                tooltip.add(recipe.catalystDescription().orElse(Component.empty()));
-            } else {
-                tooltip.add(Component.literal("The catalyst is safe!").withStyle(ChatFormatting.GREEN));
-            }
+            tooltip.addAll(recipe.actionDescriptions());
         }
     }
 

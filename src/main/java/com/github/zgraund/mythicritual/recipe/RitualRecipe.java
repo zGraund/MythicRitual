@@ -42,7 +42,7 @@ public record RitualRecipe(
         List<ResourceKey<Level>> dimensions,
         HolderSet<Biome> biomes,
         EffectHelper effect,
-        ActionOnTransmute onTransmute,
+        List<ActionOnTransmute> onTransmute,
         boolean needSky
 ) implements Recipe<RitualRecipeContext> {
     @Override
@@ -73,7 +73,8 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack assemble(@Nonnull RitualRecipeContext context, @Nonnull HolderLookup.Provider registries) {
         context.consume();
-        context.shrink(onTransmute, catalyst.count());
+//        context.shrink(onTransmute, catalyst.count());
+        onTransmute.forEach(action -> action.apply(context, this));
         context.player().swing(context.hand(), true);
         effect.apply((ServerLevel) context.level(), context.origin().above());
         return result.asItemStack().copy();
@@ -138,13 +139,17 @@ public record RitualRecipe(
     }
 
     @Nonnull
-    public Optional<Component> catalystDescription() {
-        if (!catalyst.asItemStack().isDamageableItem()) return Optional.empty();
-        return switch (onTransmute) {
-            case NONE -> Optional.empty();
-            case CONSUME -> Optional.of(Component.literal("The durability will be reduced!").withStyle(ChatFormatting.YELLOW));
-            case DESTROY -> Optional.of(Component.literal("The item will be destroyed!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-        };
+    public List<Component> actionDescriptions() {
+//        if (!catalyst.asItemStack().isDamageableItem()) return Optional.empty();
+//        for (ActionOnTransmute action : onTransmute) {
+//            switch (action) {
+////            case NONE -> Component.translatable("info.hover.ritual.safe").withStyle(ChatFormatting.GREEN);
+//                case CONSUME -> {return Optional.of(Component.translatable("info.hover.ritual.consume").withStyle(ChatFormatting.YELLOW));}
+//                case DESTROY -> {return Optional.of(Component.translatable("info.hover.ritual.destroy").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));}
+//            }
+//        }
+        return onTransmute.stream().map(ActionOnTransmute::description).flatMap(Optional::stream).toList();
+//        return Optional.empty();
     }
 
     @Nonnull

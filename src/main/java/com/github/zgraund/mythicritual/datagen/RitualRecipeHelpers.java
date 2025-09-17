@@ -98,7 +98,7 @@ public class RitualRecipeHelpers {
         private List<ResourceKey<Level>> dimensions = List.of();
         private HolderSet<Biome> biomes = HolderSet.empty();
         private EffectHelper effect = EffectHelper.NONE;
-        private ActionOnTransmute onTransmute = ActionOnTransmute.NONE;
+        private List<ActionOnTransmute> onTransmute = List.of();
         private boolean needSky = false;
 
         private Builder(HolderLookup.Provider provider) {
@@ -174,8 +174,8 @@ public class RitualRecipeHelpers {
             return this;
         }
 
-        public Builder onTransmute(ActionOnTransmute onTransmute) {
-            this.onTransmute = onTransmute;
+        public Builder onTransmute(ActionOnTransmute... actions) {
+            this.onTransmute = List.of(actions);
             return this;
         }
 

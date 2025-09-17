@@ -59,7 +59,7 @@ public class RitualRecipeContext implements RecipeInput {
     public boolean accept(@Nonnull RitualRecipe recipe) {
         return altar.getBlock().defaultBlockState() == recipe.altar()
                && recipe.catalyst().test(catalyst)
-               && (recipe.onTransmute() != ActionOnTransmute.DESTROY || catalyst.getDamageValue() == 0)
+               && (!recipe.onTransmute().contains(ActionOnTransmute.DESTROY_CATALYST) || catalyst.getDamageValue() == 0)
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals))
 
@@ -73,11 +73,11 @@ public class RitualRecipeContext implements RecipeInput {
     public void shrink(ActionOnTransmute action, int quantity) {
         if (player.isCreative()) return;
         switch (action) {
-            case DESTROY -> {
+            case DESTROY_CATALYST -> {
                 catalyst.setDamageValue(catalyst.getMaxDamage());
                 damageOrShrink(catalyst.getMaxDamage());
             }
-            case CONSUME -> damageOrShrink(quantity);
+            case CONSUME_CATALYST -> damageOrShrink(quantity);
         }
     }
 
@@ -90,7 +90,7 @@ public class RitualRecipeContext implements RecipeInput {
     @Nonnull
     public ItemStack getItem(int index) {
         if (index != 0) throw new IllegalArgumentException("No item for index " + index);
-        return this.trigger();
+        return this.catalyst();
     }
 
     @Override
@@ -103,11 +103,11 @@ public class RitualRecipeContext implements RecipeInput {
         return false;
     }
 
-    public BlockState target() {return altar;}
+    public BlockState altar() {return altar;}
 
     public BlockPos origin() {return origin;}
 
-    public ItemStack trigger() {return catalyst;}
+    public ItemStack catalyst() {return catalyst;}
 
     public Level level() {return level;}
 
