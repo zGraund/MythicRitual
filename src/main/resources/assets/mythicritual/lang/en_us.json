@@ -2,8 +2,11 @@
   "item.mythicritual.soul": "Empty Soul",
   "item.mythicritual.soul.preview_text": "Hold SHIFT to view.",
   "death.attack.ritualSacrifice": "%1$s was sacrificed in a ritual by %2$s.",
-  "info.hover.ritual.safe": "The catalyst won't be used!",
-  "info.hover.ritual.consume.catalyst": "The catalyst will be damaged!",
-  "info.hover.ritual.destroy.catalyst": "The catalyst will be destroyed!",
-  "info.hover.ritual.destroy.altar": "The altar will be destroyed!"
+  "info.hover.ritual.catalyst.keep": "The catalyst won't be used!",
+  "info.hover.ritual.catalyst.consume": "The catalyst will be damaged!",
+  "info.hover.ritual.catalyst.destroy": "The catalyst will be destroyed!",
+  "info.hover.ritual.altar.keep": "The altar won't be damaged!",
+  "info.hover.ritual.altar.destroy": "The altar will be destroyed!",
+  "info.hover.ritual.result.place": "The result, if possible, will be placed!",
+  "info.hover.ritual.result.drop": "The result will be dropped!"
 }

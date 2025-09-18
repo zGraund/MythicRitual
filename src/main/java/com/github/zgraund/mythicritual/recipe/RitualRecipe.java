@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record RitualRecipe(
@@ -73,16 +73,14 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack assemble(@Nonnull RitualRecipeContext context, @Nonnull HolderLookup.Provider registries) {
         context.consume();
-//        context.shrink(onTransmute, catalyst.count());
         onTransmute.forEach(action -> action.apply(context, this));
-        context.player().swing(context.hand(), true);
         effect.apply((ServerLevel) context.level(), context.origin().above());
         return result.asItemStack().copy();
     }
 
     @Nullable
-    public Entity getResultEntity(RitualRecipeContext context, HolderLookup.Provider registries) {
-        ItemStack result = assemble(context, registries);
+    public Entity getResultEntity(@Nonnull RitualRecipeContext context, HolderLookup.Provider registries) {
+        ItemStack result = this.result.asItemStack().copy();
         Level level = context.level();
         if (result.is(ModItems.SOUL)) {
             EntityType<?> type = result.get(ModDataComponents.SOUL_ENTITY_TYPE);
@@ -140,16 +138,7 @@ public record RitualRecipe(
 
     @Nonnull
     public List<Component> actionDescriptions() {
-//        if (!catalyst.asItemStack().isDamageableItem()) return Optional.empty();
-//        for (ActionOnTransmute action : onTransmute) {
-//            switch (action) {
-////            case NONE -> Component.translatable("info.hover.ritual.safe").withStyle(ChatFormatting.GREEN);
-//                case CONSUME -> {return Optional.of(Component.translatable("info.hover.ritual.consume").withStyle(ChatFormatting.YELLOW));}
-//                case DESTROY -> {return Optional.of(Component.translatable("info.hover.ritual.destroy").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));}
-//            }
-//        }
-        return onTransmute.stream().map(ActionOnTransmute::description).flatMap(Optional::stream).toList();
-//        return Optional.empty();
+        return onTransmute.stream().map(ActionOnTransmute::description).collect(Collectors.toList());
     }
 
     @Nonnull

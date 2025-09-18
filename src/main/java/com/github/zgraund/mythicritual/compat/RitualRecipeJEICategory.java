@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+// FIXME: this still need to be fixed
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
     public static final ResourceLocation TEXTURE = MythicRitual.ID("textures/gui/gui_test_2.png");
@@ -33,10 +34,14 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     private final int hammerX = 38;
     private final int hammerY = 4;
-    private final AnimatedSpriteRenderer consume = new AnimatedSpriteRenderer(
-            MythicRitual.ID("smashing_hammer"), 3, 16, 32, 544, 32, 32);
-    private final AnimatedSpriteRenderer save = new AnimatedSpriteRenderer(
-            MythicRitual.ID("smashing_hammer"), 3, 10, 32, 544, 32, 32);
+    //    private final AnimatedSpriteRenderer consume = new AnimatedSpriteRenderer(
+//            MythicRitual.ID("smashing_hammer"), 3, 16, 32, 544, 32, 32);
+//    private final AnimatedSpriteRenderer save = new AnimatedSpriteRenderer(
+//            MythicRitual.ID("smashing_hammer"), 3, 10, 32, 544, 32, 32);
+    private final AnimatedSpriteRenderer arrowNormal = new AnimatedSpriteRenderer(
+            MythicRitual.ID("smashing_hammer-sheet"), 3, 22, 32, 704, 32, 32);
+    private final AnimatedSpriteRenderer arrowClick = new AnimatedSpriteRenderer(
+            MythicRitual.ID("smashing_hammer_big"), 1, 28, 32, 896, 32, 32);
 
     private final int infoIconX = 145;
     private final int infoIconY = 57;
@@ -75,12 +80,13 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
         builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
-        recipe.locations().forEach((offset, ingredients) -> ingredients.forEach(
-                ingredient -> builder.addInputSlot().addItemStacks(ingredient.getItems().toList()).addRichTooltipCallback(
-                        (recipeSlotView, tooltip) -> {
-                            tooltip.add(OffsetHelpers.asComponent(offset));
-                        })
-        ));
+        recipe.locations()
+              .forEach((offset, ingredients) -> ingredients.forEach(ingredient ->
+                      builder.addInputSlot()
+                             .addItemStacks(ingredient.getItems().toList())
+                             .addRichTooltipCallback((recipeSlotView, tooltip) ->
+                                     tooltip.add(OffsetHelpers.asComponent(offset)))
+              ));
     }
 
     @Override
@@ -93,18 +99,20 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 //        if (recipe.onTransmute() != ActionOnTransmute.NONE) {
 //            consume.draw(guiGraphics, hammerX, hammerY);
 //        } else {
-        save.draw(guiGraphics, hammerX, hammerY);
+//        save.draw(guiGraphics, hammerX, hammerY);
+        arrowClick.draw(guiGraphics, hammerX, hammerY);
 //        }
     }
 
     @Override
     public void getTooltip(@Nonnull ITooltipBuilder tooltip, @Nonnull RitualRecipe recipe, @Nonnull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (infoIconX <= mouseX && infoIconX + infoIcon.getWidth() >= mouseX && infoIconY <= mouseY && infoIconY + infoIcon.getHeight() >= mouseY) {
-            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
-        }
-        if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
             tooltip.addAll(recipe.actionDescriptions());
+            tooltip.addAll(List.of(Component.empty(), recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
         }
+//        if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
+//            tooltip.addAll(recipe.actionDescriptions());
+//        }
     }
 
     @Override

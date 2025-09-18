@@ -47,7 +47,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_ROD))
                            .catalyst(RitualIngredient.of(axe))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.DESTROY_CATALYST)
+                           .onTransmute(ActionOnTransmute.DESTROY_AND_DROP)
                            .save(recipeOutput, MythicRitual.ID("axe_unbreakable"));
 
         // Tool without components, action: use 1 durability
@@ -56,16 +56,25 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_POWDER))
                            .catalyst(RitualIngredient.of(Items.DIAMOND_AXE))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.CONSUME_CATALYST)
+                           .onTransmute(ActionOnTransmute.CONSUME_AND_DROP)
                            .save(recipeOutput, MythicRitual.ID("axe_normal"));
 
-        RitualRecipeHelpers
-                .builder(provider)
-                .altar(Blocks.IRON_BLOCK)
-                .result(RitualIngredient.of(Items.ANVIL))
-                .addOfferings(RitualIngredient.of(2, Items.IRON_BLOCK), RitualIngredient.of(4, Items.IRON_INGOT))
-                .effect(EffectHelper.PARTICLES)
-                .onTransmute(ActionOnTransmute.CONSUME_CATALYST, ActionOnTransmute.PLACE_RESULT)
-                .save(recipeOutput, MythicRitual.ID("anvil_in_place"));
+        // Craft and place an anvil on the altar
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.IRON_BLOCK)
+                           .result(RitualIngredient.of(Items.ANVIL))
+                           .addOfferings(RitualIngredient.of(2, Items.IRON_BLOCK), RitualIngredient.of(4, Items.IRON_INGOT))
+                           .effect(EffectHelper.PARTICLES)
+                           .catalyst(RitualIngredient.of(Items.STICK))
+                           .onTransmute(ActionOnTransmute.CONSUME_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("anvil_in_place"));
+
+        // The famous recipe dirt -> diamond
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.DIRT)
+                           .result(RitualIngredient.of(Items.DIAMOND_BLOCK))
+                           .effect(EffectHelper.LIGHTNING)
+                           .onTransmute(ActionOnTransmute.KEEP_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("best_recipe"));
     }
 }

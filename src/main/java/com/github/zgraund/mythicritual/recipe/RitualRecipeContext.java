@@ -6,14 +6,15 @@ import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -28,14 +29,16 @@ public class RitualRecipeContext implements RecipeInput {
     private final Level level;
     private final Player player;
     private final InteractionHand hand;
+    private final UseOnContext useOnContext;
 
-    public RitualRecipeContext(BlockState target, BlockPos origin, ItemStack trigger, Level level, Player player, InteractionHand hand) {
-        this.altar = target;
-        this.origin = origin;
-        this.catalyst = trigger;
-        this.level = level;
-        this.player = player;
-        this.hand = hand;
+    public RitualRecipeContext(@Nonnull UseItemOnBlockEvent event) {
+        this.level = event.getLevel();
+        this.origin = event.getPos();
+        this.altar = level.getBlockState(origin);
+        this.catalyst = event.getItemStack();
+        this.player = event.getPlayer();
+        this.hand = event.getHand();
+        this.useOnContext = event.getUseOnContext();
     }
 
     public HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> itemsByOffset(@Nonnull Set<Vec3i> offsets) {
@@ -62,28 +65,11 @@ public class RitualRecipeContext implements RecipeInput {
                && (!recipe.onTransmute().contains(ActionOnTransmute.DESTROY_CATALYST) || catalyst.getDamageValue() == 0)
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals))
-
                && (recipe.biomes().size() == 0 || recipe.biomes().contains(level.getBiome(origin)));
     }
 
     public void consume() {
         entitiesFound.values().stream().flatMap(List::stream).forEach(holder -> holder.consume(player));
-    }
-
-    public void shrink(ActionOnTransmute action, int quantity) {
-        if (player.isCreative()) return;
-        switch (action) {
-            case DESTROY_CATALYST -> {
-                catalyst.setDamageValue(catalyst.getMaxDamage());
-                damageOrShrink(catalyst.getMaxDamage());
-            }
-            case CONSUME_CATALYST -> damageOrShrink(quantity);
-        }
-    }
-
-    private void damageOrShrink(int quantity) {
-        if (catalyst.isDamageableItem()) catalyst.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
-        else catalyst.shrink(quantity);
     }
 
     @Override
@@ -114,6 +100,8 @@ public class RitualRecipeContext implements RecipeInput {
     public InteractionHand hand() {return hand;}
 
     public Player player() {return player;}
+
+    public UseOnContext useOn() {return useOnContext;}
 
     @Override
     public String toString() {
