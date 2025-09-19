@@ -21,6 +21,7 @@ Recipes are defined in JSON format with the following structure:
 
 ```json
 {
+  "type": "mythicritual:ritual_recipe",
   "altar": "minecraft:stone",
   "catalyst": {
     "items": "minecraft:wooden_axe"
@@ -68,7 +69,9 @@ Recipes are defined in JSON format with the following structure:
 | `effect`     | Effect           | ❌        | Visual effect (`lightning`, `particles`, `none`) |
 | `actions`    | List             | ❌        | Post-craft actions (see below)                   |
 | `sky`        | Boolean          | ❌        | Whether sky access is required                   |
+
 (*) refer to example above for format information.
+
 ### Ritual Actions
 
 Configure what happens after a successful ritual:
