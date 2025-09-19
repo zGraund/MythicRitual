@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nonnull;
@@ -47,7 +48,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_ROD))
                            .catalyst(RitualIngredient.of(axe))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.DESTROY)
+                           .onTransmute(ActionOnTransmute.DESTROY_AND_DROP)
                            .save(recipeOutput, MythicRitual.ID("axe_unbreakable"));
 
         // Tool without components, action: use 1 durability
@@ -56,7 +57,34 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_POWDER))
                            .catalyst(RitualIngredient.of(Items.DIAMOND_AXE))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.CONSUME)
+                           .onTransmute(ActionOnTransmute.CONSUME_AND_DROP)
                            .save(recipeOutput, MythicRitual.ID("axe_normal"));
+
+        // Craft and place an anvil on the altar
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.IRON_BLOCK)
+                           .result(RitualIngredient.of(Items.ANVIL))
+                           .addOfferings(RitualIngredient.of(2, Items.IRON_BLOCK), RitualIngredient.of(4, Items.IRON_INGOT))
+                           .effect(EffectHelper.PARTICLES)
+                           .catalyst(RitualIngredient.of(Items.STICK))
+                           .onTransmute(ActionOnTransmute.CONSUME_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("anvil_in_place"));
+
+        // The famous recipe dirt -> diamond
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.DIRT)
+                           .result(RitualIngredient.of(Items.DIAMOND_BLOCK))
+                           .effect(EffectHelper.LIGHTNING)
+                           .onTransmute(ActionOnTransmute.KEEP_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("best_recipe"));
+
+        // Destroy the catalyst and place the result
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.ANCIENT_DEBRIS)
+                           .result(RitualIngredient.of(Items.RED_BED))
+                           .catalyst(RitualIngredient.of(Items.GOLD_INGOT))
+                           .dimensions(Level.NETHER)
+                           .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("whats_this"));
     }
 }

@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record RitualRecipe(
@@ -42,7 +42,7 @@ public record RitualRecipe(
         List<ResourceKey<Level>> dimensions,
         HolderSet<Biome> biomes,
         EffectHelper effect,
-        ActionOnTransmute onTransmute,
+        List<ActionOnTransmute> onTransmute,
         boolean needSky
 ) implements Recipe<RitualRecipeContext> {
     @Override
@@ -73,15 +73,14 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack assemble(@Nonnull RitualRecipeContext context, @Nonnull HolderLookup.Provider registries) {
         context.consume();
-        context.shrink(onTransmute, catalyst.count());
-        context.player().swing(context.hand(), true);
+        onTransmute.forEach(action -> action.apply(context, this));
         effect.apply((ServerLevel) context.level(), context.origin().above());
         return result.asItemStack().copy();
     }
 
     @Nullable
-    public Entity getResultEntity(RitualRecipeContext context, HolderLookup.Provider registries) {
-        ItemStack result = assemble(context, registries);
+    public Entity getResultEntity(@Nonnull RitualRecipeContext context, HolderLookup.Provider registries) {
+        ItemStack result = this.result.asItemStack().copy();
         Level level = context.level();
         if (result.is(ModItems.SOUL)) {
             EntityType<?> type = result.get(ModDataComponents.SOUL_ENTITY_TYPE);
@@ -138,13 +137,8 @@ public record RitualRecipe(
     }
 
     @Nonnull
-    public Optional<Component> catalystDescription() {
-        if (!catalyst.asItemStack().isDamageableItem()) return Optional.empty();
-        return switch (onTransmute) {
-            case NONE -> Optional.empty();
-            case CONSUME -> Optional.of(Component.literal("The durability will be reduced!").withStyle(ChatFormatting.YELLOW));
-            case DESTROY -> Optional.of(Component.literal("The item will be destroyed!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-        };
+    public List<Component> actionDescriptions() {
+        return onTransmute.stream().map(ActionOnTransmute::description).collect(Collectors.toList());
     }
 
     @Nonnull

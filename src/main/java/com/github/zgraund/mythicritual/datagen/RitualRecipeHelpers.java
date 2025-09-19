@@ -39,7 +39,8 @@ import java.util.*;
  * The {@link RitualRecipeHelpers#fromTag} helper methods are only meant to be used in data generation.
  * </p>
  *
- * <h3>Example Usage</h3>
+ * <h3>Example Usage </h3>
+ * find more in {@link ModRecipeProvider#buildRecipes}
  *
  * <pre>{@code
  * RitualRecipeHelpers.builder(provider)
@@ -52,7 +53,7 @@ import java.util.*;
  *         RitualIngredient.of(5, Items.DIAMOND, Items.EMERALD),
  *         RitualIngredient.of(10, Items.GOLD_INGOT)
  *     )
- *     .addOfferings(new Vec3i(1, 0, 0), RitualIngredient.of(EntityType.ZOMBIE))
+ *     .addOfferings(1, 0, 0, RitualIngredient.of(EntityType.ZOMBIE))
  *     .dimensions(Level.OVERWORLD)
  *     .biomes(Biomes.TAIGA)
  *     .effect(EffectHelper.LIGHTNING)
@@ -98,7 +99,7 @@ public class RitualRecipeHelpers {
         private List<ResourceKey<Level>> dimensions = List.of();
         private HolderSet<Biome> biomes = HolderSet.empty();
         private EffectHelper effect = EffectHelper.NONE;
-        private ActionOnTransmute onTransmute = ActionOnTransmute.NONE;
+        private List<ActionOnTransmute> onTransmute = List.of();
         private boolean needSky = false;
 
         private Builder(HolderLookup.Provider provider) {
@@ -174,8 +175,13 @@ public class RitualRecipeHelpers {
             return this;
         }
 
-        public Builder onTransmute(ActionOnTransmute onTransmute) {
-            this.onTransmute = onTransmute;
+        public Builder onTransmute(ActionOnTransmute... actions) {
+            this.onTransmute = List.of(actions);
+            return this;
+        }
+
+        public Builder onTransmute(List<ActionOnTransmute> actions) {
+            this.onTransmute = actions;
             return this;
         }
 

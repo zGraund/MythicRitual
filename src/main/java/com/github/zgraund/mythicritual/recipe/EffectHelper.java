@@ -38,7 +38,9 @@ public enum EffectHelper implements StringRepresentable {
         public void apply(@Nonnull ServerLevel level, BlockPos pos) {
             LightningBolt lightningBolt = EntityType.LIGHTNING_BOLT.create(level);
             if (lightningBolt == null) return;
-            lightningBolt.moveTo(pos.getBottomCenter());
+            // TODO: unsure about where to put the lightning
+//            lightningBolt.moveTo(pos.getBottomCenter());
+            lightningBolt.moveTo(pos.below().getCenter());
             lightningBolt.setVisualOnly(true);
             level.addFreshEntity(lightningBolt);
         }

@@ -15,10 +15,10 @@ public class OffsetHelpers {
         int x = offset.getX();
         int y = offset.getY();
         int z = offset.getZ();
-        if (x != 0) out.add(x < 0 ? "⬅ " + Math.abs(x) : "➡ " + x);
-        if (y != 0) out.add(y < 0 ? "⬇ " + Math.abs(y) : "⬆ " + y);
-        if (z != 0) out.add(z < 0 ? "⬈ " + Math.abs(z) : "⬋ " + z);
-        return Component.literal(String.join(", ", out));
+        if (x != 0) out.add(x < 0 ? "\uD83E\uDC70 " + Math.abs(x) : "\uD83E\uDC72 " + x); // Left    - Right arrows
+        if (y != 0) out.add(y < 0 ? "\uD83E\uDC73 " + Math.abs(y) : "\uD83E\uDC71 " + y); // Up      - Down  arrows
+        if (z != 0) out.add(z < 0 ? "\uD83E\uDC75 " + Math.abs(z) : "\uD83E\uDC77 " + z); // Forward - Back  arrows
+        return Component.literal("Position: " + String.join(", ", out));
     }
 
     public static boolean isDefault(@Nonnull Vec3i offset) {

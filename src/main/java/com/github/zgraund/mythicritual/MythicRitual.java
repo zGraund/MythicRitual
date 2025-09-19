@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings("unused")
 @Mod(MythicRitual.MOD_ID)
 public class MythicRitual {
     public static final String MOD_ID = "mythicritual";
