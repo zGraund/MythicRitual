@@ -34,8 +34,8 @@ public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
                     Level.RESOURCE_KEY_CODEC.listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
                     Biome.LIST_CODEC.optionalFieldOf("biomes", HolderSet.empty()).forGetter(RitualRecipe::biomes),
                     EffectHelper.CODEC.optionalFieldOf("effect", EffectHelper.NONE).forGetter(RitualRecipe::effect),
-                    ActionOnTransmute.CODEC.listOf().optionalFieldOf("onTransmute", ActionOnTransmute.DEFAULT).forGetter(RitualRecipe::onTransmute),
-                    Codec.BOOL.optionalFieldOf("needSky", false).forGetter(RitualRecipe::needSky)
+                    ActionOnTransmute.CODEC.listOf().optionalFieldOf("actions", ActionOnTransmute.DEFAULT).forGetter(RitualRecipe::onTransmute),
+                    Codec.BOOL.optionalFieldOf("sky", false).forGetter(RitualRecipe::needSky)
             ).apply(inst, RitualRecipe::new)
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, RitualRecipe> STREAM_CODEC =

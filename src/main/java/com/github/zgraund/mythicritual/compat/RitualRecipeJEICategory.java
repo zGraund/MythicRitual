@@ -20,45 +20,30 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
-// FIXME: this still need to be fixed
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
-    public static final ResourceLocation TEXTURE = MythicRitual.ID("textures/gui/gui_test_2.png");
-    public static final ResourceLocation ICON = MythicRitual.ID("textures/gui/ritual_recipe/ritual_icon.png");
     public static final RecipeType<RitualRecipe> TYPE = new RecipeType<>(UID, RitualRecipe.class);
 
-    private final int hammerX = 38;
-    private final int hammerY = 4;
-    //    private final AnimatedSpriteRenderer consume = new AnimatedSpriteRenderer(
-//            MythicRitual.ID("smashing_hammer"), 3, 16, 32, 544, 32, 32);
-//    private final AnimatedSpriteRenderer save = new AnimatedSpriteRenderer(
-//            MythicRitual.ID("smashing_hammer"), 3, 10, 32, 544, 32, 32);
-    private final AnimatedSpriteRenderer arrowNormal = new AnimatedSpriteRenderer(
-            MythicRitual.ID("smashing_hammer-sheet"), 3, 22, 32, 704, 32, 32);
-    private final AnimatedSpriteRenderer arrowClick = new AnimatedSpriteRenderer(
+    private final AnimatedSpriteRenderer hammer = new AnimatedSpriteRenderer(
             MythicRitual.ID("smashing_hammer_big"), 1, 28, 32, 896, 32, 32);
 
     private final int infoIconX = 145;
     private final int infoIconY = 57;
     private final IDrawable infoIcon;
-
-    private final IDrawable background;
     private final IDrawable icon;
     private final IGuiHelper guiHelper;
-    private final int width = 162;
-    private final int height = 144;
-    private final int ingListCol = 8;
 
     public RitualRecipeJEICategory(@Nonnull IGuiHelper helper) {
-        this.background = helper.createDrawable(TEXTURE, 0, 0, width, height);
-        this.icon = helper.drawableBuilder(ICON, 0, 0, 16, 16).setTextureSize(16, 16).build();
         this.guiHelper = helper;
-        this.infoIcon = helper.drawableBuilder(MythicRitual.ID("textures/gui/sprites/info_icon_small.png"), 0, 0, 16, 16)
+        this.icon = helper.drawableBuilder(MythicRitual.ID("textures/gui/ritual_recipe/ritual_icon.png"), 0, 0, 16, 16)
+                          .setTextureSize(16, 16)
+                          .build();
+        this.infoIcon = helper.drawableBuilder(MythicRitual.ID("textures/gui/ritual_recipe/info_icon_small.png"), 0, 0, 16, 16)
                               .setTextureSize(16, 16)
                               .build();
     }
@@ -71,7 +56,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
                .setTextAlignment(VerticalAlignment.CENTER);
 
         List<IRecipeSlotDrawable> inputSlots = builder.getRecipeSlots().getSlots(RecipeIngredientRole.INPUT);
-        builder.addScrollGridWidget(inputSlots.subList(2, inputSlots.size()), ingListCol, 4).setPosition(0, 72);
+        builder.addScrollGridWidget(inputSlots.subList(2, inputSlots.size()), 8, 4).setPosition(0, 72);
     }
 
     @Override
@@ -91,35 +76,27 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     @Override
     public void draw(@Nonnull RitualRecipe recipe, @Nonnull IRecipeSlotsView recipeSlotsView, @Nonnull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-//        background.draw(guiGraphics);
         IDrawableStatic arrow = guiHelper.getRecipeArrow();
-//        arrow.draw(guiGraphics, 43, 18);
         arrow.draw(guiGraphics, 95, 18);
         infoIcon.draw(guiGraphics, infoIconX, infoIconY);
-//        if (recipe.onTransmute() != ActionOnTransmute.NONE) {
-//            consume.draw(guiGraphics, hammerX, hammerY);
-//        } else {
-//        save.draw(guiGraphics, hammerX, hammerY);
-        arrowClick.draw(guiGraphics, hammerX, hammerY);
-//        }
+        hammer.draw(guiGraphics, 35, 2);
     }
 
     @Override
     public void getTooltip(@Nonnull ITooltipBuilder tooltip, @Nonnull RitualRecipe recipe, @Nonnull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (infoIconX <= mouseX && infoIconX + infoIcon.getWidth() >= mouseX && infoIconY <= mouseY && infoIconY + infoIcon.getHeight() >= mouseY) {
+            tooltip.add(Component.translatable("info.hover.ritual.info"));
             tooltip.addAll(recipe.actionDescriptions());
-            tooltip.addAll(List.of(Component.empty(), recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
+            tooltip.add(Component.empty());
+            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
         }
-//        if (consume.hover(hammerX, hammerY, mouseX, mouseY)) {
-//            tooltip.addAll(recipe.actionDescriptions());
-//        }
     }
 
     @Override
-    public int getHeight() {return height;}
+    public int getHeight() {return 144;}
 
     @Override
-    public int getWidth() {return width;}
+    public int getWidth() {return 162;}
 
     @Override
     @Nonnull
@@ -130,5 +107,14 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     public Component getTitle() {return Component.literal("Ritual");}
 
     @Override
-    public @Nullable IDrawable getIcon() {return icon;}
+    @Nullable
+    public IDrawable getIcon() {return icon;}
+
+    @SuppressWarnings("unused")
+    private void drawDebugBackground(GuiGraphics guiGraphics) {
+        // Debug background for alignment
+        ResourceLocation texture = MythicRitual.ID("textures/gui/debug_background.png");
+        IDrawable background = guiHelper.createDrawable(texture, 0, 0, getWidth(), getHeight());
+        background.draw(guiGraphics);
+    }
 }

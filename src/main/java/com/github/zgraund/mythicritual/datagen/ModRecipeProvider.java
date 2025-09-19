@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nonnull;
@@ -76,5 +77,14 @@ public class ModRecipeProvider extends RecipeProvider {
                            .effect(EffectHelper.LIGHTNING)
                            .onTransmute(ActionOnTransmute.KEEP_AND_PLACE)
                            .save(recipeOutput, MythicRitual.ID("best_recipe"));
+
+        // Destroy the catalyst and place the result
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.ANCIENT_DEBRIS)
+                           .result(RitualIngredient.of(Items.RED_BED))
+                           .catalyst(RitualIngredient.of(Items.GOLD_INGOT))
+                           .dimensions(Level.NETHER)
+                           .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("whats_this"));
     }
 }
