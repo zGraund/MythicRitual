@@ -86,5 +86,12 @@ public class ModRecipeProvider extends RecipeProvider {
                            .dimensions(Level.NETHER)
                            .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
                            .save(recipeOutput, MythicRitual.ID("whats_this"));
+
+        // Test placing of a tile-entity
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.OAK_LOG)
+                           .result(RitualIngredient.of(Items.CHEST))
+                           .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
+                           .save(recipeOutput, MythicRitual.ID("chest"));
     }
 }
