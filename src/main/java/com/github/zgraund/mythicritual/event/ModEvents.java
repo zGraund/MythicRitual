@@ -21,7 +21,6 @@ import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-@SuppressWarnings("unused")
 @EventBusSubscriber(modid = MythicRitual.MOD_ID)
 public class ModEvents {
     @SubscribeEvent

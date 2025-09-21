@@ -1,6 +1,5 @@
 package com.github.zgraund.mythicritual.recipe;
 
-import com.github.zgraund.mythicritual.util.ParticleUtils;
 import com.github.zgraund.mythicritual.util.SoundUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
@@ -27,7 +26,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.catalyst.general",
-                    Component.translatable("info.hover.ritual.preserved").withStyle(ChatFormatting.GREEN)
+                    Component.translatable("info.hover.ritual.preserve").withStyle(ChatFormatting.GREEN)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -75,9 +74,7 @@ public enum ActionOnTransmute implements StringRepresentable {
     DESTROY_ALTAR("destroy_altar") {
         @Override
         public void apply(RitualRecipeContext context, RitualRecipe recipe) {
-            ParticleUtils.sendBreakParticles(context.level(), recipe.altar(), context.origin());
-            SoundUtils.playBreakSound(context.level(), context.altar(), context.origin(), context.player());
-            context.level().removeBlock(context.origin(), false);
+            context.level().destroyBlock(context.origin(), false, context.player());
         }
 
         @Override
@@ -92,7 +89,7 @@ public enum ActionOnTransmute implements StringRepresentable {
     DROP_RESULT("drop_result") {
         @Override
         public void apply(RitualRecipeContext context, RitualRecipe recipe) {
-            Entity entity = recipe.getResultEntity(context, context.level().registryAccess());
+            Entity entity = recipe.getResultEntity(context);
             if (entity == null) return;
 
             entity.setPos(context.origin().above().getCenter());

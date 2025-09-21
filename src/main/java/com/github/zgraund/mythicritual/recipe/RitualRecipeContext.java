@@ -6,6 +6,7 @@ import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,12 +42,13 @@ public class RitualRecipeContext implements RecipeInput {
         this.useOnContext = event.getUseOnContext();
     }
 
-    public HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> itemsByOffset(@Nonnull Set<Vec3i> offsets) {
+    public HashMap<Vec3i, List<RitualRecipe.OfferingHolder>> getEntitiesByOffsets(@Nonnull Set<Vec3i> offsets) {
         for (Vec3i offset : offsets) {
             BlockPos target = RotationUtils.relativeTo(origin, offset, player.getDirection());
             entitiesFound.put(offset,
                     level.getEntities(null, new AABB(target))
                          .stream()
+                         .filter(Entity::isAlive)
                          .map(entity -> {
                                      if (entity instanceof ItemEntity item) return new RitualRecipe.OfferingHolder(entity, item.getItem().copy());
                                      ItemStack item = new ItemStack(ModItems.SOUL.asItem(), 1);

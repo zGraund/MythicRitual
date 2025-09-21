@@ -6,8 +6,8 @@
   "info.hover.ritual.altar.general": "The altar will be %s",
   "info.hover.ritual.catalyst.general": "The catalyst will be %s",
   "info.hover.ritual.result.general": "The result will be %s",
-  "info.hover.ritual.preserved": "preserved",
-  "info.hover.ritual.damaged": "damaged!",
+  "info.hover.ritual.preserve": "preserved",
+  "info.hover.ritual.damage": "damaged!",
   "info.hover.ritual.destroy": "destroyed!",
   "info.hover.ritual.drop": "dropped",
   "info.hover.ritual.place": "placed!"

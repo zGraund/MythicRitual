@@ -49,7 +49,7 @@ public record RitualRecipe(
     public boolean matches(@Nonnull RitualRecipeContext context, @Nonnull Level level) {
         if (!context.accept(this)) return false;
         if (locations.isEmpty()) return true;
-        HashMap<Vec3i, List<OfferingHolder>> inputEntities = context.itemsByOffset(locations.keySet());
+        HashMap<Vec3i, List<OfferingHolder>> inputEntities = context.getEntitiesByOffsets(locations.keySet());
         for (Map.Entry<Vec3i, List<RitualIngredient>> location : locations.entrySet()) {
             List<OfferingHolder> entitiesAt = inputEntities.get(location.getKey());
             if (entitiesAt == null || entitiesAt.isEmpty()) return false;
@@ -79,7 +79,7 @@ public record RitualRecipe(
     }
 
     @Nullable
-    public Entity getResultEntity(@Nonnull RitualRecipeContext context, HolderLookup.Provider registries) {
+    public Entity getResultEntity(@Nonnull RitualRecipeContext context) {
         ItemStack result = this.result.asItemStack().copy();
         Level level = context.level();
         if (result.is(ModItems.SOUL)) {
@@ -152,13 +152,16 @@ public record RitualRecipe(
 
         public void consume(@Nullable Player player) {
             switch (original) {
-                case ItemEntity i -> i.getItem().shrink(Math.abs(normalized.getCount() - i.getItem().getCount()));
-                case LivingEntity l -> {
+                case ItemEntity item -> item.getItem().shrink(item.getItem().getCount() - normalized.getCount());
+                case LivingEntity living -> {
                     if (normalized.getCount() > 0) return;
-                    l.setData(ModDataAttachments.IS_SACRIFICED, true);
-                    l.hurt(new DamageSources(original.level().registryAccess()).source(ModDamageTypes.RITUAL_DAMAGE, player), Float.MAX_VALUE);
+                    living.setData(ModDataAttachments.IS_SACRIFICED, true);
+                    living.hurt(new DamageSources(original.level().registryAccess()).source(ModDamageTypes.RITUAL_DAMAGE, player), Float.MAX_VALUE);
                 }
-                default -> original.kill();
+                default -> {
+                    if (normalized.getCount() > 0) return;
+                    original.kill();
+                }
             }
         }
     }

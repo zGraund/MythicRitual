@@ -10,7 +10,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -19,13 +18,12 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
 @Mod(MythicRitual.MOD_ID)
 public class MythicRitual {
     public static final String MOD_ID = "mythicritual";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public MythicRitual(@Nonnull IEventBus modEventBus, ModContainer modContainer) {
+    public MythicRitual(@Nonnull IEventBus modEventBus) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 

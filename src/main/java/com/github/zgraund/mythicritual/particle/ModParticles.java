@@ -12,7 +12,8 @@ import java.util.function.Supplier;
 public class ModParticles {
     public static final DeferredRegister<ParticleType<?>> TYPES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, MythicRitual.MOD_ID);
 
-    public static final Supplier<SimpleParticleType> RITUAL_PARTICLES = TYPES.register("ritual_particles", () -> new SimpleParticleType(false));
+    public static final Supplier<SimpleParticleType> RITUAL_PARTICLES =
+            TYPES.register("ritual_particles", () -> new SimpleParticleType(false));
 
     public static void register(IEventBus eventBus) {
         TYPES.register(eventBus);
