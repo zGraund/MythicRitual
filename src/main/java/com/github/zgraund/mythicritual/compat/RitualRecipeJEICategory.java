@@ -26,11 +26,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
-    public static final ResourceLocation UID = MythicRitual.ID("ritual_recipe");
+    public static final ResourceLocation UID = MythicRitual.id("ritual_recipe");
     public static final RecipeType<RitualRecipe> TYPE = new RecipeType<>(UID, RitualRecipe.class);
 
     private final AnimatedSpriteRenderer hammer = new AnimatedSpriteRenderer(
-            MythicRitual.ID("smashing_hammer_big"), 1, 28, 32, 896, 32, 32);
+            MythicRitual.id("smashing_hammer_big"), 1, 28, 32, 896, 32, 32);
 
     private final int infoIconX = 145;
     private final int infoIconY = 57;
@@ -40,10 +40,10 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     public RitualRecipeJEICategory(@Nonnull IGuiHelper helper) {
         this.guiHelper = helper;
-        this.icon = helper.drawableBuilder(MythicRitual.ID("textures/gui/ritual_recipe/ritual_icon.png"), 0, 0, 16, 16)
+        this.icon = helper.drawableBuilder(MythicRitual.id("textures/gui/ritual_recipe/ritual_icon.png"), 0, 0, 16, 16)
                           .setTextureSize(16, 16)
                           .build();
-        this.infoIcon = helper.drawableBuilder(MythicRitual.ID("textures/gui/ritual_recipe/info_icon_small.png"), 0, 0, 16, 16)
+        this.infoIcon = helper.drawableBuilder(MythicRitual.id("textures/gui/ritual_recipe/info_icon_small.png"), 0, 0, 16, 16)
                               .setTextureSize(16, 16)
                               .build();
     }
@@ -113,7 +113,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     @SuppressWarnings("unused")
     private void drawDebugBackground(GuiGraphics guiGraphics) {
         // Debug background for alignment
-        ResourceLocation texture = MythicRitual.ID("textures/gui/debug_background.png");
+        ResourceLocation texture = MythicRitual.id("textures/gui/debug_background.png");
         IDrawable background = guiHelper.createDrawable(texture, 0, 0, getWidth(), getHeight());
         background.draw(guiGraphics);
     }

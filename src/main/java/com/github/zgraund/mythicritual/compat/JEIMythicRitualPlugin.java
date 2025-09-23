@@ -31,7 +31,7 @@ public class JEIMythicRitualPlugin implements IModPlugin {
     @Override
     @Nonnull
     public ResourceLocation getPluginUid() {
-        return MythicRitual.ID("jei_plugin");
+        return MythicRitual.id("jei_plugin");
     }
 
     @Override

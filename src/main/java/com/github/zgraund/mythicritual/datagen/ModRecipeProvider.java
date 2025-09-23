@@ -40,7 +40,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BONE))
                            .addOfferings(RitualIngredient.of(EntityType.PLAYER))
                            .effect(EffectHelper.LIGHTNING)
-                           .save(recipeOutput, MythicRitual.ID("sacrifice_player"));
+                           .save(recipeOutput, MythicRitual.id("sacrifice_player"));
 
         // Tool as catalyst with enchants, action: destroy catalyst
         ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
@@ -52,7 +52,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .catalyst(RitualIngredient.of(axe))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
                            .onTransmute(ActionOnTransmute.DESTROY_AND_DROP)
-                           .save(recipeOutput, MythicRitual.ID("axe_unbreakable"));
+                           .save(recipeOutput, MythicRitual.id("axe_unbreakable"));
 
         // Tool without components, action: use 1 durability
         RitualRecipeHelpers.builder(provider)
@@ -61,7 +61,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .catalyst(RitualIngredient.of(Items.DIAMOND_AXE))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
                            .onTransmute(ActionOnTransmute.CONSUME_AND_DROP)
-                           .save(recipeOutput, MythicRitual.ID("axe_normal"));
+                           .save(recipeOutput, MythicRitual.id("axe_normal"));
 
         // Craft and place an anvil on the altar
         RitualRecipeHelpers.builder(provider)
@@ -71,7 +71,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .effect(EffectHelper.PARTICLES)
                            .catalyst(RitualIngredient.of(Items.STICK))
                            .onTransmute(ActionOnTransmute.CONSUME_AND_PLACE)
-                           .save(recipeOutput, MythicRitual.ID("anvil_in_place"));
+                           .save(recipeOutput, MythicRitual.id("anvil_in_place"));
 
         // The famous recipe dirt -> diamond
         RitualRecipeHelpers.builder(provider)
@@ -79,7 +79,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.DIAMOND_BLOCK))
                            .effect(EffectHelper.LIGHTNING)
                            .onTransmute(ActionOnTransmute.KEEP_AND_PLACE)
-                           .save(recipeOutput, MythicRitual.ID("best_recipe"));
+                           .save(recipeOutput, MythicRitual.id("best_recipe"));
 
         // Destroy the catalyst and place the result
         RitualRecipeHelpers.builder(provider)
@@ -88,14 +88,14 @@ public class ModRecipeProvider extends RecipeProvider {
                            .catalyst(RitualIngredient.of(Items.GOLD_INGOT))
                            .dimensions(Level.NETHER)
                            .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
-                           .save(recipeOutput, MythicRitual.ID("whats_this"));
+                           .save(recipeOutput, MythicRitual.id("whats_this"));
 
         // Test placing of a tile-entity
         RitualRecipeHelpers.builder(provider)
                            .altar(Blocks.OAK_LOG)
                            .result(RitualIngredient.of(Items.CHEST))
                            .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
-                           .save(recipeOutput, MythicRitual.ID("chest"));
+                           .save(recipeOutput, MythicRitual.id("chest"));
 
         // Entity as ingredient
         RitualRecipeHelpers.builder(provider)
@@ -104,7 +104,7 @@ public class ModRecipeProvider extends RecipeProvider {
                            .catalyst(RitualIngredient.of(Items.GOLDEN_APPLE))
                            .addOfferings(RitualIngredient.of(EntityType.ZOMBIE))
                            .onTransmute(ActionOnTransmute.CONSUME_AND_DROP)
-                           .save(recipeOutput, MythicRitual.ID("villager_conversion"));
+                           .save(recipeOutput, MythicRitual.id("villager_conversion"));
 
         // Ender Dragon sword
         ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
@@ -119,6 +119,6 @@ public class ModRecipeProvider extends RecipeProvider {
                            .catalyst(RitualIngredient.of(Items.NETHERITE_SWORD))
                            .addOfferings(RitualIngredient.of(EntityType.ENDER_DRAGON))
                            .onTransmute(ActionOnTransmute.DESTROY_AND_DROP)
-                           .save(recipeOutput, MythicRitual.ID("dragon_sword"));
+                           .save(recipeOutput, MythicRitual.id("dragon_sword"));
     }
 }

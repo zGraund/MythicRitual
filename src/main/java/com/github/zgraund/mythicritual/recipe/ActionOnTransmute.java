@@ -16,6 +16,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,7 +51,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public void apply(RitualRecipeContext context, RitualRecipe recipe) {
             if (context.player().isCreative()) return;
             context.catalyst().setDamageValue(context.catalyst().getMaxDamage());
-            this.damageOrShrink(context.catalyst(), context.catalyst().getMaxDamage(), context.player(), context.hand());
+            this.damageOrShrink(context.catalyst(), 0, context.player(), context.hand());
         }
 
         @Override
@@ -157,7 +158,7 @@ public enum ActionOnTransmute implements StringRepresentable {
 
     public abstract Component description();
 
-    public final void damageOrShrink(@Nonnull ItemStack item, int quantity, Player player, InteractionHand hand) {
+    public final void damageOrShrink(@Nonnull ItemStack item, int quantity, Player player, @Nullable InteractionHand hand) {
         if (item.isDamageableItem()) item.hurtAndBreak(quantity, player, LivingEntity.getSlotForHand(hand));
         else item.shrink(quantity);
     }

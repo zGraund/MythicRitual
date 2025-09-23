@@ -9,11 +9,7 @@ import com.github.zgraund.mythicritual.recipe.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -24,12 +20,6 @@ public class MythicRitual {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public MythicRitual(@Nonnull IEventBus modEventBus) {
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
-        // Register ourselves for server and other game events we are interested in.
-        NeoForge.EVENT_BUS.register(this);
-
         ModRecipes.register(modEventBus);
         ModIngredients.register(modEventBus);
         ModItems.register(modEventBus);
@@ -41,10 +31,5 @@ public class MythicRitual {
     }
 
     @Nonnull
-    public static ResourceLocation ID(String path) {return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);}
-
-    private void commonSetup(FMLCommonSetupEvent event) {}
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {LOGGER.info("HELLO from server starting");}
+    public static ResourceLocation id(String path) {return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);}
 }
