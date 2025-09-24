@@ -5,9 +5,9 @@ import com.github.zgraund.mythicritual.attachment.ModDataAttachments;
 import com.github.zgraund.mythicritual.recipe.ModRecipes;
 import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import com.github.zgraund.mythicritual.recipe.RitualRecipeContext;
+import com.github.zgraund.mythicritual.registries.ModRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -17,6 +17,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -45,13 +46,16 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onEntitySacrifice(@Nonnull LivingDropsEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity.hasData(ModDataAttachments.IS_SACRIFICED)) event.setCanceled(true);
+        event.setCanceled(event.getEntity().getData(ModDataAttachments.IS_SACRIFICED));
     }
 
     @SubscribeEvent
     public static void onEntitySacrifice(@Nonnull LivingExperienceDropEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity.hasData(ModDataAttachments.IS_SACRIFICED)) event.setCanceled(true);
+        event.setCanceled(event.getEntity().getData(ModDataAttachments.IS_SACRIFICED));
+    }
+
+    @SubscribeEvent
+    public static void registerRegistries(@Nonnull NewRegistryEvent event) {
+        event.register(ModRegistries.ACTION_REGISTRY);
     }
 }

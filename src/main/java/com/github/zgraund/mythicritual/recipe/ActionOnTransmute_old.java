@@ -20,14 +20,14 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 
-public enum ActionOnTransmute implements StringRepresentable {
+public enum ActionOnTransmute_old implements StringRepresentable {
     // Catalyst actions
     KEEP_CATALYST("keep_catalyst") {
         @Override
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.catalyst.general",
-                    Component.translatable("info.hover.ritual.preserve").withStyle(ChatFormatting.GREEN)
+                    Component.translatable("info.hover.ritual.action.preserve").withStyle(ChatFormatting.GREEN)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -42,7 +42,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.catalyst.general",
-                    Component.translatable("info.hover.ritual.damage").withStyle(ChatFormatting.YELLOW)
+                    Component.translatable("info.hover.ritual.action.damage").withStyle(ChatFormatting.YELLOW)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -58,7 +58,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.catalyst.general",
-                    Component.translatable("info.hover.ritual.destroy").withStyle(ChatFormatting.RED)
+                    Component.translatable("info.hover.ritual.action.destroy").withStyle(ChatFormatting.RED)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -68,7 +68,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.altar.general",
-                    Component.translatable("info.hover.ritual.preserve").withStyle(ChatFormatting.GREEN)
+                    Component.translatable("info.hover.ritual.action.preserve").withStyle(ChatFormatting.GREEN)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -82,7 +82,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.altar.general",
-                    Component.translatable("info.hover.ritual.destroy").withStyle(ChatFormatting.RED)
+                    Component.translatable("info.hover.ritual.action.destroy").withStyle(ChatFormatting.RED)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -109,7 +109,7 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.result.general",
-                    Component.translatable("info.hover.ritual.drop").withStyle(ChatFormatting.GREEN)
+                    Component.translatable("info.hover.ritual.action.drop").withStyle(ChatFormatting.GREEN)
             ).withStyle(ChatFormatting.GRAY);
         }
     },
@@ -131,24 +131,24 @@ public enum ActionOnTransmute implements StringRepresentable {
         public Component description() {
             return Component.translatable(
                     "info.hover.ritual.result.general",
-                    Component.translatable("info.hover.ritual.place").withStyle(ChatFormatting.YELLOW)
+                    Component.translatable("info.hover.ritual.action.place").withStyle(ChatFormatting.YELLOW)
             ).withStyle(ChatFormatting.GRAY);
         }
     };
 
-    public static final Codec<ActionOnTransmute> CODEC = StringRepresentable.fromEnum(ActionOnTransmute::values);
+    public static final Codec<ActionOnTransmute_old> CODEC = StringRepresentable.fromEnum(ActionOnTransmute_old::values);
 
-    public static final List<ActionOnTransmute> DEFAULT = List.of(KEEP_CATALYST, KEEP_ALTAR, DROP_RESULT);
-    public static final List<ActionOnTransmute> CONSUME_AND_DROP = List.of(DAMAGE_CATALYST, KEEP_ALTAR, DROP_RESULT);
-    public static final List<ActionOnTransmute> DESTROY_AND_DROP = List.of(DESTROY_CATALYST, KEEP_ALTAR, DROP_RESULT);
-    public static final List<ActionOnTransmute> KEEP_AND_PLACE = List.of(KEEP_CATALYST, DESTROY_ALTAR, PLACE_RESULT);
-    public static final List<ActionOnTransmute> CONSUME_AND_PLACE = List.of(DAMAGE_CATALYST, DESTROY_ALTAR, PLACE_RESULT);
-    public static final List<ActionOnTransmute> DESTROY_AND_PLACE = List.of(DESTROY_CATALYST, DESTROY_ALTAR, PLACE_RESULT);
+    public static final List<ActionOnTransmute_old> DEFAULT = List.of(KEEP_CATALYST, KEEP_ALTAR, DROP_RESULT);
+    public static final List<ActionOnTransmute_old> CONSUME_AND_DROP = List.of(DAMAGE_CATALYST, KEEP_ALTAR, DROP_RESULT);
+    public static final List<ActionOnTransmute_old> DESTROY_AND_DROP = List.of(DESTROY_CATALYST, KEEP_ALTAR, DROP_RESULT);
+    public static final List<ActionOnTransmute_old> KEEP_AND_PLACE = List.of(KEEP_CATALYST, DESTROY_ALTAR, PLACE_RESULT);
+    public static final List<ActionOnTransmute_old> CONSUME_AND_PLACE = List.of(DAMAGE_CATALYST, DESTROY_ALTAR, PLACE_RESULT);
+    public static final List<ActionOnTransmute_old> DESTROY_AND_PLACE = List.of(DESTROY_CATALYST, DESTROY_ALTAR, PLACE_RESULT);
 
     @Nonnull
     private final String action;
 
-    ActionOnTransmute(@Nonnull String action) {this.action = action.toLowerCase(Locale.ROOT);}
+    ActionOnTransmute_old(@Nonnull String action) {this.action = action.toLowerCase(Locale.ROOT);}
 
     @Override
     @Nonnull

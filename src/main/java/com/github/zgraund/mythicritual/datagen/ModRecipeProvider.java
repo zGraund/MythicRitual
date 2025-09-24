@@ -2,8 +2,8 @@ package com.github.zgraund.mythicritual.datagen;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
-import com.github.zgraund.mythicritual.recipe.ActionOnTransmute;
 import com.github.zgraund.mythicritual.recipe.EffectHelper;
+import com.github.zgraund.mythicritual.recipe.action.Actions;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
@@ -51,7 +51,8 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_ROD))
                            .catalyst(RitualIngredient.of(axe))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.DESTROY_AND_DROP)
+//                           .onTransmute(ActionOnTransmute_old.DESTROY_AND_DROP)
+                           .onTransmute(Actions.DESTROY_CATALYST, Actions.DROP_RESULT)
                            .save(recipeOutput, MythicRitual.id("axe_unbreakable"));
 
         // Tool without components, action: use 1 durability
@@ -60,7 +61,8 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.BLAZE_POWDER))
                            .catalyst(RitualIngredient.of(Items.DIAMOND_AXE))
                            .addOfferings(RitualIngredient.of(Items.NETHER_STAR))
-                           .onTransmute(ActionOnTransmute.CONSUME_AND_DROP)
+//                           .onTransmute(ActionOnTransmute_old.CONSUME_AND_DROP)
+                           .onTransmute(Actions.DAMAGE_CATALYST, Actions.DROP_RESULT)
                            .save(recipeOutput, MythicRitual.id("axe_normal"));
 
         // Craft and place an anvil on the altar
@@ -70,7 +72,8 @@ public class ModRecipeProvider extends RecipeProvider {
                            .addOfferings(RitualIngredient.of(2, Items.IRON_BLOCK), RitualIngredient.of(4, Items.IRON_INGOT))
                            .effect(EffectHelper.PARTICLES)
                            .catalyst(RitualIngredient.of(Items.STICK))
-                           .onTransmute(ActionOnTransmute.CONSUME_AND_PLACE)
+//                           .onTransmute(ActionOnTransmute_old.CONSUME_AND_PLACE)
+                           .onTransmute(Actions.DAMAGE_CATALYST, Actions.PLACE_RESULT)
                            .save(recipeOutput, MythicRitual.id("anvil_in_place"));
 
         // The famous recipe dirt -> diamond
@@ -78,7 +81,8 @@ public class ModRecipeProvider extends RecipeProvider {
                            .altar(Blocks.DIRT)
                            .result(RitualIngredient.of(Items.DIAMOND_BLOCK))
                            .effect(EffectHelper.LIGHTNING)
-                           .onTransmute(ActionOnTransmute.KEEP_AND_PLACE)
+//                           .onTransmute(ActionOnTransmute_old.KEEP_AND_PLACE)
+                           .onTransmute(Actions.PLACE_RESULT)
                            .save(recipeOutput, MythicRitual.id("best_recipe"));
 
         // Destroy the catalyst and place the result
@@ -87,14 +91,16 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(Items.RED_BED))
                            .catalyst(RitualIngredient.of(Items.GOLD_INGOT))
                            .dimensions(Level.NETHER)
-                           .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
+//                           .onTransmute(ActionOnTransmute_old.DESTROY_AND_PLACE)
+                           .onTransmute(Actions.DESTROY_CATALYST, Actions.PLACE_RESULT)
                            .save(recipeOutput, MythicRitual.id("whats_this"));
 
         // Test placing of a tile-entity
         RitualRecipeHelpers.builder(provider)
                            .altar(Blocks.OAK_LOG)
                            .result(RitualIngredient.of(Items.CHEST))
-                           .onTransmute(ActionOnTransmute.DESTROY_AND_PLACE)
+//                           .onTransmute(ActionOnTransmute_old.DESTROY_AND_PLACE)
+                           .onTransmute(Actions.DESTROY_CATALYST, Actions.PLACE_RESULT)
                            .save(recipeOutput, MythicRitual.id("chest"));
 
         // Entity as ingredient
@@ -103,8 +109,18 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(EntityType.VILLAGER))
                            .catalyst(RitualIngredient.of(Items.GOLDEN_APPLE))
                            .addOfferings(RitualIngredient.of(EntityType.ZOMBIE))
-                           .onTransmute(ActionOnTransmute.CONSUME_AND_DROP)
+//                           .onTransmute(ActionOnTransmute_old.CONSUME_AND_DROP)
+                           .onTransmute(Actions.DAMAGE_CATALYST, Actions.DROP_RESULT)
                            .save(recipeOutput, MythicRitual.id("villager_conversion"));
+
+        // Test the EventHooks#finalizeMobSpawn
+        RitualRecipeHelpers.builder(provider)
+                           .altar(Blocks.MOSSY_COBBLESTONE)
+                           .result(RitualIngredient.of(EntityType.ZOMBIE))
+                           .catalyst(RitualIngredient.of(Items.DEBUG_STICK))
+                           .addOfferings(RitualIngredient.of(8, Items.ROTTEN_FLESH))
+                           .onTransmute(Actions.HURT_PLAYER, Actions.DROP_RESULT)
+                           .save(recipeOutput, MythicRitual.id("zombie_army"));
 
         // Ender Dragon sword
         ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
@@ -118,7 +134,8 @@ public class ModRecipeProvider extends RecipeProvider {
                            .result(RitualIngredient.of(1, dragonSwordComponents, Items.NETHERITE_SWORD))
                            .catalyst(RitualIngredient.of(Items.NETHERITE_SWORD))
                            .addOfferings(RitualIngredient.of(EntityType.ENDER_DRAGON))
-                           .onTransmute(ActionOnTransmute.DESTROY_AND_DROP)
+//                           .onTransmute(ActionOnTransmute_old.DESTROY_AND_DROP)
+                           .onTransmute(Actions.DESTROY_CATALYST, Actions.DROP_RESULT)
                            .save(recipeOutput, MythicRitual.id("dragon_sword"));
     }
 }

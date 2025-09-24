@@ -6,6 +6,7 @@ import com.github.zgraund.mythicritual.ingredient.ModIngredients;
 import com.github.zgraund.mythicritual.item.ModItems;
 import com.github.zgraund.mythicritual.particle.ModParticles;
 import com.github.zgraund.mythicritual.recipe.ModRecipes;
+import com.github.zgraund.mythicritual.recipe.action.Actions;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +23,7 @@ public class MythicRitual {
     public MythicRitual(@Nonnull IEventBus modEventBus) {
         ModRecipes.register(modEventBus);
         ModIngredients.register(modEventBus);
+        Actions.register(modEventBus);
         ModItems.register(modEventBus);
 
         ModDataComponents.register(modEventBus);

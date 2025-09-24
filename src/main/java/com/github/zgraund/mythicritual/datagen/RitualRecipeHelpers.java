@@ -1,10 +1,11 @@
 package com.github.zgraund.mythicritual.datagen;
 
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
-import com.github.zgraund.mythicritual.recipe.ActionOnTransmute;
 import com.github.zgraund.mythicritual.recipe.EffectHelper;
 import com.github.zgraund.mythicritual.recipe.RitualRecipe;
+import com.github.zgraund.mythicritual.recipe.action.ActionOnTransmute;
 import net.minecraft.advancements.Criterion;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Vec3i;
@@ -57,7 +58,7 @@ import java.util.*;
  *     .dimensions(Level.OVERWORLD)
  *     .biomes(Biomes.TAIGA)
  *     .effect(EffectHelper.LIGHTNING)
- *     .onTransmute(ActionOnTransmute.DESTROY)
+ *     .onTransmute(ActionOnTransmute_old.DESTROY)
  *     .needSky(true)
  *
  *     // finalize and write JSON
@@ -99,7 +100,7 @@ public class RitualRecipeHelpers {
         private List<ResourceKey<Level>> dimensions = List.of();
         private HolderSet<Biome> biomes = HolderSet.empty();
         private EffectHelper effect = EffectHelper.NONE;
-        private List<ActionOnTransmute> onTransmute = List.of();
+        private List<Holder<ActionOnTransmute>> onTransmute = List.of();
         private boolean needSky = false;
 
         private Builder(HolderLookup.Provider provider) {
@@ -175,12 +176,13 @@ public class RitualRecipeHelpers {
             return this;
         }
 
-        public Builder onTransmute(ActionOnTransmute... actions) {
+        @SafeVarargs
+        public final Builder onTransmute(Holder<ActionOnTransmute>... actions) {
             this.onTransmute = List.of(actions);
             return this;
         }
 
-        public Builder onTransmute(List<ActionOnTransmute> actions) {
+        public Builder onTransmute(List<Holder<ActionOnTransmute>> actions) {
             this.onTransmute = actions;
             return this;
         }

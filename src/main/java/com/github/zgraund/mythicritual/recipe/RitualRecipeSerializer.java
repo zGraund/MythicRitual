@@ -1,6 +1,8 @@
 package com.github.zgraund.mythicritual.recipe;
 
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
+import com.github.zgraund.mythicritual.recipe.action.Actions;
+import com.github.zgraund.mythicritual.registries.ModRegistries;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -34,7 +36,8 @@ public class RitualRecipeSerializer implements RecipeSerializer<RitualRecipe> {
                     Level.RESOURCE_KEY_CODEC.listOf().optionalFieldOf("dimensions", List.of()).forGetter(RitualRecipe::dimensions),
                     Biome.LIST_CODEC.optionalFieldOf("biomes", HolderSet.empty()).forGetter(RitualRecipe::biomes),
                     EffectHelper.CODEC.optionalFieldOf("effect", EffectHelper.NONE).forGetter(RitualRecipe::effect),
-                    ActionOnTransmute.CODEC.listOf().optionalFieldOf("actions", ActionOnTransmute.DEFAULT).forGetter(RitualRecipe::onTransmute),
+//                    ActionOnTransmute_old.CODEC.listOf().optionalFieldOf("actions", ActionOnTransmute_old.DEFAULT).forGetter(RitualRecipe::onTransmute),
+                    ModRegistries.ACTION_REGISTRY.holderByNameCodec().listOf().optionalFieldOf("actions", Actions.DEFAULT).forGetter(RitualRecipe::onTransmute),
                     Codec.BOOL.optionalFieldOf("sky", false).forGetter(RitualRecipe::needSky)
             ).apply(inst, RitualRecipe::new)
     );

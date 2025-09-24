@@ -2,6 +2,7 @@ package com.github.zgraund.mythicritual.recipe;
 
 import com.github.zgraund.mythicritual.component.ModDataComponents;
 import com.github.zgraund.mythicritual.item.ModItems;
+import com.github.zgraund.mythicritual.recipe.action.Actions;
 import com.github.zgraund.mythicritual.util.RotationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -64,7 +65,7 @@ public class RitualRecipeContext implements RecipeInput {
     public boolean accept(@Nonnull RitualRecipe recipe) {
         return altar.getBlock().defaultBlockState() == recipe.altar()
                && recipe.catalyst().test(catalyst)
-               && (!recipe.onTransmute().contains(ActionOnTransmute.DESTROY_CATALYST) || catalyst.getDamageValue() == 0)
+               && (!recipe.onTransmute().contains(Actions.DESTROY_CATALYST) || catalyst.getDamageValue() == 0)
                && (!recipe.needSky() || level.canSeeSky(origin.above()))
                && (recipe.dimensions().isEmpty() || recipe.dimensions().stream().anyMatch(level.dimension()::equals))
                && (recipe.biomes().size() == 0 || recipe.biomes().contains(level.getBiome(origin)));

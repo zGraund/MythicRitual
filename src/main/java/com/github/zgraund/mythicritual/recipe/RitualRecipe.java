@@ -6,6 +6,7 @@ import com.github.zgraund.mythicritual.component.ModDataComponents;
 import com.github.zgraund.mythicritual.damage.ModDamageTypes;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.item.ModItems;
+import com.github.zgraund.mythicritual.recipe.action.ActionOnTransmute;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.*;
 import net.minecraft.network.chat.Component;
@@ -31,7 +32,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record RitualRecipe(
@@ -42,7 +42,7 @@ public record RitualRecipe(
         List<ResourceKey<Level>> dimensions,
         HolderSet<Biome> biomes,
         EffectHelper effect,
-        List<ActionOnTransmute> onTransmute,
+        List<Holder<ActionOnTransmute>> onTransmute,
         boolean needSky
 ) implements Recipe<RitualRecipeContext> {
     @Override
@@ -73,7 +73,7 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack assemble(@Nonnull RitualRecipeContext context, @Nonnull HolderLookup.Provider registries) {
         context.consume();
-        onTransmute.forEach(action -> action.apply(context, this));
+        onTransmute.forEach(action -> action.value().apply(context, this));
         effect.apply((ServerLevel) context.level(), context.origin().above());
         return result.asItemStack().copy();
     }
@@ -138,7 +138,9 @@ public record RitualRecipe(
 
     @Nonnull
     public List<Component> actionDescriptions() {
-        return onTransmute.stream().map(ActionOnTransmute::description).collect(Collectors.toList());
+        List<Component> actions = onTransmute.stream().map(Holder::value).map(ActionOnTransmute::getDescription).toList();
+        if (actions.isEmpty()) return List.of(Component.translatable("info.hover.ritual.action.empty").withStyle(ChatFormatting.BOLD, ChatFormatting.RED));
+        return actions;
     }
 
     @Nonnull

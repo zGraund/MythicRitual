@@ -6,9 +6,11 @@
   "info.hover.ritual.altar.general": "The altar will be %s",
   "info.hover.ritual.catalyst.general": "The catalyst will be %s",
   "info.hover.ritual.result.general": "The result will be %s",
-  "info.hover.ritual.preserve": "preserved",
-  "info.hover.ritual.damage": "damaged!",
-  "info.hover.ritual.destroy": "destroyed!",
-  "info.hover.ritual.drop": "dropped",
-  "info.hover.ritual.place": "placed!"
+  "info.hover.ritual.action.empty": "No actions specified!",
+  "info.hover.ritual.action.hurt": "This is gonna hurt!",
+  "info.hover.ritual.action.preserve": "preserved",
+  "info.hover.ritual.action.damage": "damaged!",
+  "info.hover.ritual.action.destroy": "destroyed!",
+  "info.hover.ritual.action.drop": "dropped",
+  "info.hover.ritual.action.place": "placed!"
 }
