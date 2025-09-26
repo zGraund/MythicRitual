@@ -19,7 +19,7 @@ public class DropResult implements ActionOnTransmute {
             return;
         }
 
-        entity.setPos(context.origin().above().getCenter());
+        entity.setPos(context.origin().above().getBottomCenter());
         entity.setDeltaMovement(0, 0.20, 0);
         if (entity instanceof LivingEntity living) {
             float entityDirection = context.player().getDirection().getOpposite().toYRot();
