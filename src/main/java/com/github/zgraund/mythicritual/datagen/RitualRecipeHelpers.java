@@ -4,6 +4,7 @@ import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.recipe.EffectHelper;
 import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import com.github.zgraund.mythicritual.recipe.action.ActionOnTransmute;
+import com.github.zgraund.mythicritual.recipe.action.Actions;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -100,7 +101,7 @@ public class RitualRecipeHelpers {
         private List<ResourceKey<Level>> dimensions = List.of();
         private HolderSet<Biome> biomes = HolderSet.empty();
         private EffectHelper effect = EffectHelper.NONE;
-        private List<Holder<ActionOnTransmute>> onTransmute = List.of();
+        private List<Holder<ActionOnTransmute>> onTransmute = Actions.DEFAULT;
         private boolean needSky = false;
 
         private Builder(HolderLookup.Provider provider) {

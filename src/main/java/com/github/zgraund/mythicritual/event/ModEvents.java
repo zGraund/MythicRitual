@@ -57,5 +57,6 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerRegistries(@Nonnull NewRegistryEvent event) {
         event.register(ModRegistries.ACTION_REGISTRY);
+        event.register(ModRegistries.CONDITION_REGISTRY);
     }
 }
