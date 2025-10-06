@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 
 public record Weather(Optional<Conditions> condition, Optional<String> description) implements RitualCondition {
     public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            StringRepresentable.fromEnum(Conditions::values).optionalFieldOf("values").forGetter(Weather::condition),
+            StringRepresentable.fromEnum(Conditions::values).optionalFieldOf("value").forGetter(Weather::condition),
             DESCRIPTION_CODEC.forGetter(Weather::description)
     ).apply(inst, Weather::new));
 
@@ -51,7 +51,7 @@ public record Weather(Optional<Conditions> condition, Optional<String> descripti
         return CODEC;
     }
 
-    enum Conditions implements StringRepresentable, Predicate<Level> {
+    public enum Conditions implements StringRepresentable, Predicate<Level> {
         CLEAR("clear", level -> !level.isRaining() && !level.isThundering()),
         RAIN("rain", Level::isRaining),
         THUNDER("thunder", Level::isThundering);

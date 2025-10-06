@@ -61,8 +61,8 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
 
     @Override
     public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull RitualRecipe recipe, @Nonnull IFocusGroup focuses) {
-        builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStacks(recipe.catalyst().getItems().toList());
-        builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
+//        builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStacks(recipe.catalyst().getItems().toList());
+//        builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
         recipe.locations()
@@ -88,7 +88,8 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
             tooltip.add(Component.translatable("info.hover.ritual.info"));
             tooltip.addAll(recipe.actionDescriptions());
             tooltip.add(Component.empty());
-            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
+//            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
+            tooltip.addAll(recipe.conditions().getDescriptions());
         }
     }
 

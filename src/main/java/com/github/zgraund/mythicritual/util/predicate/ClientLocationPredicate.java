@@ -25,7 +25,6 @@ public record ClientLocationPredicate(
         Optional<MinMaxBounds.Ints> light,
         Optional<Boolean> canSeeSky
 ) {
-    public static final ClientLocationPredicate ANY = ClientLocationPredicate.builder().build();
     public static final MapCodec<ClientLocationPredicate> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             RegistryCodecs.homogeneousList(Registries.BIOME).optionalFieldOf("biomes").forGetter(ClientLocationPredicate::biomes),
             ResourceKey.codec(Registries.DIMENSION).listOf().optionalFieldOf("dimensions").forGetter(ClientLocationPredicate::dimensions),
@@ -54,24 +53,29 @@ public record ClientLocationPredicate(
         private Optional<MinMaxBounds.Ints> light = Optional.empty();
         private Optional<Boolean> canSeeSk = Optional.empty();
 
-        public void setBiomes(HolderSet<Biome> biomes) {
+        public Builder setBiomes(HolderSet<Biome> biomes) {
             this.biomes = Optional.of(biomes);
+            return this;
         }
 
-        public void setDimensions(List<ResourceKey<Level>> dimensions) {
+        public Builder setDimensions(List<ResourceKey<Level>> dimensions) {
             this.dimensions = Optional.of(dimensions);
+            return this;
         }
 
-        public void setSmokey(Boolean smokey) {
+        public Builder setSmokey(Boolean smokey) {
             this.smokey = Optional.of(smokey);
+            return this;
         }
 
-        public void setLight(MinMaxBounds.Ints light) {
+        public Builder setLight(MinMaxBounds.Ints light) {
             this.light = Optional.of(light);
+            return this;
         }
 
-        public void setCanSeeSk(Boolean canSeeSk) {
+        public Builder setCanSeeSk(Boolean canSeeSk) {
             this.canSeeSk = Optional.of(canSeeSk);
+            return this;
         }
 
         public ClientLocationPredicate build() {return new ClientLocationPredicate(biomes, dimensions, smokey, light, canSeeSk);}

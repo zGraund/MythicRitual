@@ -18,15 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record Location(ClientLocationPredicate location, Optional<String> description) implements RitualCondition {
+public record Location(Optional<ClientLocationPredicate> location, Optional<String> description) implements RitualCondition {
     public static final MapCodec<Location> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            ClientLocationPredicate.CODEC.codec().optionalFieldOf("value", ClientLocationPredicate.ANY).forGetter(Location::location),
+            ClientLocationPredicate.CODEC.codec().optionalFieldOf("value").forGetter(Location::location),
             DESCRIPTION_CODEC.forGetter(Location::description)
     ).apply(inst, Location::new));
 
     @Override
     public boolean test(@Nonnull RitualRecipeContext context) {
-        return location == ClientLocationPredicate.ANY || location.matches(context.level(), context.origin());
+        return location.isEmpty() || location.get().matches(context.level(), context.origin());
     }
 
     @Nonnull
@@ -34,8 +34,8 @@ public record Location(ClientLocationPredicate location, Optional<String> descri
     public List<Component> getDescription() {
         List<Component> lines = new ArrayList<>();
         description.ifPresent(string -> lines.add(Component.literal(string)));
-        if (location != ClientLocationPredicate.ANY) {
-            location.biomes().ifPresent(biomes -> {
+        if (location.isPresent()) {
+            location.get().biomes().ifPresent(biomes -> {
                 List<Component> components =
                         biomes.stream()
                               .map(Holder::getRegisteredName)
@@ -45,7 +45,7 @@ public record Location(ClientLocationPredicate location, Optional<String> descri
                 Component formatted = ComponentUtils.formatList(components, Component.literal(", "));
                 lines.add(Component.translatable("info.hover.ritual.condition.location.biomes", formatted).withStyle(ChatFormatting.GRAY));
             });
-            location.dimensions().ifPresent(dimensions -> {
+            location.get().dimensions().ifPresent(dimensions -> {
                 List<Component> components =
                         dimensions.stream()
                                   .map(ResourceKey::location)
@@ -54,19 +54,26 @@ public record Location(ClientLocationPredicate location, Optional<String> descri
                 Component formatted = ComponentUtils.formatList(components, Component.literal(", "));
                 lines.add(Component.translatable("info.hover.ritual.condition.location.dimensions", formatted).withStyle(ChatFormatting.GRAY));
             });
-            location.canSeeSky().ifPresent(sky -> {
+            location.get().canSeeSky().ifPresent(sky -> {
                 String key = "info.hover.ritual.condition.sky";
                 lines.add(Component.translatable(
                         key,
                         Component.translatable(sky ? key + ".open" : key + ".blocked").withStyle(sky ? ChatFormatting.GREEN : ChatFormatting.RED)
                 ).withStyle(ChatFormatting.GRAY));
             });
-            location.light().ifPresent(light -> lines.add(Component.translatable(
+            location.get().light().ifPresent(light -> lines.add(Component.translatable(
                             "info.hover.ritual.condition.location.light",
                             Component.literal(FormatUtils.minMaxBoundToString(light)).withStyle(ChatFormatting.RED)
                     ).withStyle(ChatFormatting.GRAY)
             ));
-            // TODO: smokey tooltip line
+            location.get().smokey().ifPresent(smoke -> {
+                String key = "info.hover.ritual.condition.location.smoke";
+                lines.add(Component.translatable(
+                                key,
+                                Component.literal(smoke ? key + ".true" : key + ".false").withStyle(smoke ? ChatFormatting.GREEN : ChatFormatting.RED)
+                        ).withStyle(ChatFormatting.GRAY)
+                );
+            });
         }
         return lines;
     }

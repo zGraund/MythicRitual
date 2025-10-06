@@ -35,7 +35,7 @@ public enum ActionOnTransmute_old implements StringRepresentable {
         @Override
         public void apply(RitualRecipeContext context, RitualRecipe recipe) {
             if (context.player().isCreative()) return;
-            this.damageOrShrink(context.catalyst(), recipe.catalyst().count(), context.player(), context.hand());
+//            this.damageOrShrink(context.catalyst(), recipe.catalyst().count(), context.player(), context.hand());
         }
 
         @Override

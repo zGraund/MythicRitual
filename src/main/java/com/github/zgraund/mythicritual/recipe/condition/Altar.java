@@ -13,16 +13,15 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
-public record Altar(BlockPredicate block, Optional<String> description) implements RitualCondition {
-    public static final BlockPredicate ANY = BlockPredicate.Builder.block().build();
+public record Altar(Optional<BlockPredicate> block, Optional<String> description) implements RitualCondition {
     public static final MapCodec<Altar> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            BlockPredicate.CODEC.optionalFieldOf("value", ANY).forGetter(Altar::block),
+            BlockPredicate.CODEC.optionalFieldOf("value").forGetter(Altar::block),
             DESCRIPTION_CODEC.forGetter(Altar::description)
     ).apply(inst, Altar::new));
 
     @Override
     public boolean test(@Nonnull RitualRecipeContext context) {
-        return block == ANY || block.matches(new BlockInWorld(context.level(), context.origin(), false));
+        return block.isEmpty() || block.get().matches(new BlockInWorld(context.level(), context.origin(), false));
     }
 
     @Nonnull

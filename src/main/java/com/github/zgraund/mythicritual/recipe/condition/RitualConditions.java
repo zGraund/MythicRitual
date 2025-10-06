@@ -19,6 +19,7 @@ public class RitualConditions {
         register(RitualConditionKeys.LOCATION, Location.CODEC);
         register(RitualConditionKeys.WEATHER, Weather.CODEC);
         register(RitualConditionKeys.TIME, Time.CODEC);
+        register(RitualConditionKeys.CATALYST, Catalyst.CODEC);
     }
 
     @Nonnull
