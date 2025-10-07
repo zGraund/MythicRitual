@@ -15,11 +15,11 @@ public class RitualConditions {
             DeferredRegister.create(ModRegistries.CONDITION_REGISTRY, MythicRitual.MOD_ID);
 
     static {
-        register(RitualConditionKeys.ALTAR, Altar.CODEC);
-        register(RitualConditionKeys.LOCATION, Location.CODEC);
-        register(RitualConditionKeys.WEATHER, Weather.CODEC);
-        register(RitualConditionKeys.TIME, Time.CODEC);
-        register(RitualConditionKeys.CATALYST, Catalyst.CODEC);
+        register(RitualConditionKey.ALTAR, Altar.CODEC);
+        register(RitualConditionKey.LOCATION, Location.CODEC);
+        register(RitualConditionKey.WEATHER, Weather.CODEC);
+        register(RitualConditionKey.TIME, Time.CODEC);
+        register(RitualConditionKey.CATALYST, Catalyst.CODEC);
     }
 
     @Nonnull

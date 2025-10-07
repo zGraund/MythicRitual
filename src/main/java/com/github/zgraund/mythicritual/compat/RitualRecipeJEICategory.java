@@ -56,7 +56,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
                .setTextAlignment(VerticalAlignment.CENTER);
 
         List<IRecipeSlotDrawable> inputSlots = builder.getRecipeSlots().getSlots(RecipeIngredientRole.INPUT);
-        builder.addScrollGridWidget(inputSlots.subList(2, inputSlots.size()), 8, 4).setPosition(0, 72);
+//        builder.addScrollGridWidget(inputSlots.subList(2, inputSlots.size()), 8, 4).setPosition(0, 72);
     }
 
     @Override

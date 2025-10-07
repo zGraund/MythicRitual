@@ -8,10 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class RitualConditionMap {
     public static final MapCodec<RitualConditionMap> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
@@ -21,6 +18,7 @@ public class RitualConditionMap {
     private final HashMap<ResourceLocation, RitualCondition> conditions = new LinkedHashMap<>();
 
     public RitualConditionMap(@Nonnull List<RitualCondition> conditions) {
+        // TODO: sort to have a consistent recipe info in jei
         conditions.forEach(condition -> this.conditions.put(condition.getResourceLocation(), condition));
     }
 
@@ -29,7 +27,7 @@ public class RitualConditionMap {
     }
 
     public Catalyst getCatalyst() {
-        RitualCondition uncasted = this.conditions.get(RitualConditionKeys.CATALYST);
+        RitualCondition uncasted = this.conditions.get(RitualConditionKey.CATALYST);
         if (uncasted instanceof Catalyst catalyst) {
             return catalyst;
         } else {
@@ -38,7 +36,8 @@ public class RitualConditionMap {
     }
 
     public List<Component> getDescriptions() {
-        return this.conditions.values().stream().flatMap(ritualCondition -> ritualCondition.getDescription().stream()).toList();
+        // TODO: better formatting
+        return this.conditions.values().stream().map(RitualCondition::getDescription).flatMap(Collection::stream).toList();
     }
 
     public List<RitualCondition> asList() {
@@ -57,7 +56,7 @@ public class RitualConditionMap {
     }
 
     public static class Builder {
-        private final HashSet<RitualCondition> conditions = new HashSet<>();
+        private final HashSet<RitualCondition> conditions = new LinkedHashSet<>();
 
         public void addCondition(RitualCondition condition) {
             conditions.add(condition);

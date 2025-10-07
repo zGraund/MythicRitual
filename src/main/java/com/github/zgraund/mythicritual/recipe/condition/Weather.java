@@ -43,7 +43,7 @@ public record Weather(Optional<Conditions> condition, Optional<String> descripti
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return RitualConditionKeys.WEATHER;
+        return RitualConditionKey.WEATHER;
     }
 
     @Override

@@ -33,7 +33,6 @@ public record Location(Optional<ClientLocationPredicate> location, Optional<Stri
     @Override
     public List<Component> getDescription() {
         List<Component> lines = new ArrayList<>();
-        description.ifPresent(string -> lines.add(Component.literal(string)));
         if (location.isPresent()) {
             location.get().biomes().ifPresent(biomes -> {
                 List<Component> components =
@@ -55,7 +54,7 @@ public record Location(Optional<ClientLocationPredicate> location, Optional<Stri
                 lines.add(Component.translatable("info.hover.ritual.condition.location.dimensions", formatted).withStyle(ChatFormatting.GRAY));
             });
             location.get().canSeeSky().ifPresent(sky -> {
-                String key = "info.hover.ritual.condition.sky";
+                String key = "info.hover.ritual.condition.location.sky";
                 lines.add(Component.translatable(
                         key,
                         Component.translatable(sky ? key + ".open" : key + ".blocked").withStyle(sky ? ChatFormatting.GREEN : ChatFormatting.RED)
@@ -63,24 +62,28 @@ public record Location(Optional<ClientLocationPredicate> location, Optional<Stri
             });
             location.get().light().ifPresent(light -> lines.add(Component.translatable(
                             "info.hover.ritual.condition.location.light",
-                            Component.literal(FormatUtils.minMaxBoundToString(light)).withStyle(ChatFormatting.RED)
+                            FormatUtils.minMaxBoundToComponent(light)
                     ).withStyle(ChatFormatting.GRAY)
             ));
             location.get().smokey().ifPresent(smoke -> {
                 String key = "info.hover.ritual.condition.location.smoke";
                 lines.add(Component.translatable(
                                 key,
-                                Component.literal(smoke ? key + ".true" : key + ".false").withStyle(smoke ? ChatFormatting.GREEN : ChatFormatting.RED)
+                                Component.translatable(smoke ? key + ".true" : key + ".false").withStyle(smoke ? ChatFormatting.GREEN : ChatFormatting.RED)
                         ).withStyle(ChatFormatting.GRAY)
                 );
             });
+        }
+        description.ifPresent(string -> appendDescription(lines, string));
+        if (!lines.isEmpty()) {
+            lines.addFirst(Component.literal(this.getClass().getSimpleName() + ":").withStyle(ChatFormatting.UNDERLINE, ChatFormatting.ITALIC));
         }
         return lines;
     }
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return RitualConditionKeys.LOCATION;
+        return RitualConditionKey.LOCATION;
     }
 
     @Override

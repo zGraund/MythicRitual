@@ -31,7 +31,7 @@ public record Time(Optional<MinMaxBounds.Ints> time, Optional<String> descriptio
         List<Component> lines = new ArrayList<>();
         time.ifPresent(bounds -> lines.add(Component.translatable(
                         "info.hover.ritual.condition.time",
-                        Component.literal(FormatUtils.minMaxBoundToString(bounds)).withStyle(ChatFormatting.GREEN)
+                        FormatUtils.minMaxBoundToComponent(bounds)
                 ).withStyle(ChatFormatting.GRAY)
         ));
         description.ifPresent(s -> lines.add(Component.literal(s).withStyle(ChatFormatting.GRAY)));
@@ -40,7 +40,7 @@ public record Time(Optional<MinMaxBounds.Ints> time, Optional<String> descriptio
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return RitualConditionKeys.TIME;
+        return RitualConditionKey.TIME;
     }
 
     @Override

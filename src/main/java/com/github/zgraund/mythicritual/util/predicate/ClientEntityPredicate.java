@@ -16,7 +16,6 @@ public record ClientEntityPredicate(
         Optional<EntityFlagsPredicate> flags,
         Optional<EntityEquipmentPredicate> equipment
 ) {
-    public static final ClientEntityPredicate ANY = ClientEntityPredicate.builder().build();
     public static final MapCodec<ClientEntityPredicate> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             EntityTypePredicate.CODEC.optionalFieldOf("type").forGetter(ClientEntityPredicate::entityType),
             MobEffectsPredicate.CODEC.optionalFieldOf("effects").forGetter(ClientEntityPredicate::effects),

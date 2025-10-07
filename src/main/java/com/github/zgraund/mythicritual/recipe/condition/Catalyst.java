@@ -19,15 +19,16 @@ import java.util.Optional;
 
 public record Catalyst(Optional<ItemPredicate> items, Optional<String> description) implements RitualCondition {
     public static final ItemPredicate EMPTY_HAND = ItemPredicate.Builder.item().of(Items.AIR).build();
+    private static final String EMPTY_HAND_KEY = "empty_hand";
     public static final MapCodec<Catalyst> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             NeoForgeExtraCodecs.withAlternative(
                     Codec.STRING.flatXmap(
-                            string -> string.equals("empty_hand")
+                            string -> string.equals(EMPTY_HAND_KEY)
                                     ? DataResult.success(EMPTY_HAND)
-                                    : DataResult.error(() -> "String must be \"empty_hand\""),
+                                    : DataResult.error(() -> "Key must be " + EMPTY_HAND_KEY),
                             item -> item == EMPTY_HAND
-                                    ? DataResult.success("empty_hand")
-                                    : DataResult.error(() -> "Predicate not EMPTY_HAND")),
+                                    ? DataResult.success(EMPTY_HAND_KEY)
+                                    : DataResult.error(() -> "Invalid ItemPredicate in Catalyst condition")),
                     ItemPredicate.CODEC
             ).optionalFieldOf("value").forGetter(Catalyst::items),
             DESCRIPTION_CODEC.forGetter(Catalyst::description)
@@ -54,7 +55,7 @@ public record Catalyst(Optional<ItemPredicate> items, Optional<String> descripti
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return RitualConditionKeys.CATALYST;
+        return RitualConditionKey.CATALYST;
     }
 
     @Override

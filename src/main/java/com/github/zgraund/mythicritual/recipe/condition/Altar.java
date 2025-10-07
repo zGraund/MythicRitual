@@ -32,7 +32,7 @@ public record Altar(Optional<BlockPredicate> block, Optional<String> description
 
     @Override
     public ResourceLocation getResourceLocation() {
-        return RitualConditionKeys.ALTAR;
+        return RitualConditionKey.ALTAR;
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.recipe.condition.*;
 import com.github.zgraund.mythicritual.util.predicate.ClientLocationPredicate;
 import net.minecraft.advancements.critereon.BlockPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -14,12 +13,13 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,11 +37,15 @@ public class ModRecipeProvider extends RecipeProvider {
 
         RitualRecipeHelpers.builder(provider).result(RitualIngredient.of(Items.DIAMOND_BLOCK)).addConditions(
                 new Altar(Optional.of(BlockPredicate.Builder.block().of(BlockTags.WOOL).build()), Optional.empty()),
-                new Catalyst(Optional.of(ItemPredicate.Builder.item().of(ItemTags.SWORDS).build()), Optional.of("spade seee")),
+                new Catalyst(Optional.of(Catalyst.EMPTY_HAND), Optional.of("spade seee")),
                 new Location(Optional.of(ClientLocationPredicate
                         .builder()
                         .setBiomes(biomesLookup.getOrThrow(BiomeTags.HAS_VILLAGE_PLAINS))
-                        .build()), Optional.of("i biomi see")),
+                        .setDimensions(List.of(Level.OVERWORLD, Level.NETHER))
+                        .setCanSeeSk(true)
+                        .setLight(MinMaxBounds.Ints.between(1, 12))
+                        .setSmokey(false)
+                        .build()), Optional.of("la location seee")),
                 new Time(Optional.of(MinMaxBounds.Ints.between(690, 42000)), Optional.of("nice")),
                 new Weather(Optional.of(Weather.Conditions.RAIN), Optional.of("piove meloni ladro"))
         ).save(recipeOutput, MythicRitual.id("test_new_system"));
