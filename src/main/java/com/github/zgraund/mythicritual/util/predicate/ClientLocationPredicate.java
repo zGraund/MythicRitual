@@ -25,6 +25,7 @@ public record ClientLocationPredicate(
         Optional<MinMaxBounds.Ints> light,
         Optional<Boolean> canSeeSky
 ) {
+    public static final ClientLocationPredicate ANY = ClientLocationPredicate.builder().build();
     public static final MapCodec<ClientLocationPredicate> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             RegistryCodecs.homogeneousList(Registries.BIOME).optionalFieldOf("biomes").forGetter(ClientLocationPredicate::biomes),
             ResourceKey.codec(Registries.DIMENSION).listOf().optionalFieldOf("dimensions").forGetter(ClientLocationPredicate::dimensions),
@@ -34,7 +35,7 @@ public record ClientLocationPredicate(
     ).apply(inst, ClientLocationPredicate::new));
 
     public boolean matches(Level level, BlockPos pos) {
-        return (biomes.isEmpty() || biomes.get() == level.getBiome(pos)) &&
+        return (biomes.isEmpty() || biomes.get().contains(level.getBiome(pos))) &&
                (dimensions.isEmpty() || dimensions.get().contains(level.dimension())) &&
                (smokey.isEmpty() || smokey.get() == CampfireBlock.isSmokeyPos(level, pos)) &&
                (light.isEmpty() || light.get().matches(level.getMaxLocalRawBrightness(pos))) &&

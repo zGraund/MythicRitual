@@ -5,6 +5,7 @@ import com.github.zgraund.mythicritual.recipe.RitualRecipe;
 import com.github.zgraund.mythicritual.render.AnimatedSpriteRenderer;
 import com.github.zgraund.mythicritual.util.OffsetHelpers;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -62,7 +63,8 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
     @Override
     public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull RitualRecipe recipe, @Nonnull IFocusGroup focuses) {
 //        builder.addInputSlot(19, 19).setStandardSlotBackground().addItemStacks(recipe.catalyst().getItems().toList());
-//        builder.addInputSlot(73, 19).setStandardSlotBackground().addItemLike(recipe.altar().getBlock().asItem());
+        IRecipeSlotBuilder altarSlot = builder.addInputSlot(73, 19).setStandardSlotBackground();
+        recipe.getAltar().forEach(altarSlot::addItemLike);
         builder.addOutputSlot(127, 19).setOutputSlotBackground().addItemStacks(recipe.result().getItems().toList());
 
         recipe.locations()
@@ -89,7 +91,7 @@ public class RitualRecipeJEICategory implements IRecipeCategory<RitualRecipe> {
             tooltip.addAll(recipe.actionDescriptions());
             tooltip.add(Component.empty());
 //            tooltip.addAll(List.of(recipe.skyAccessDescription(), recipe.dimensionsDescription(), recipe.biomeDescription()));
-            tooltip.addAll(recipe.conditions().getDescriptions());
+            recipe.conditions().getDescriptions().ifPresent(tooltip::add);
         }
     }
 

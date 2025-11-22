@@ -7,6 +7,8 @@ import com.github.zgraund.mythicritual.damage.ModDamageTypes;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.item.ModItems;
 import com.github.zgraund.mythicritual.recipe.action.ActionOnTransmute;
+import com.github.zgraund.mythicritual.recipe.condition.Altar;
+import com.github.zgraund.mythicritual.recipe.condition.RitualConditionKey;
 import com.github.zgraund.mythicritual.recipe.condition.RitualConditionMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -25,6 +27,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nonnull;
@@ -119,6 +122,12 @@ public record RitualRecipe(
     public Stream<RitualIngredient> getCustomIngredients() {
         return locations.values().stream().flatMap(List::stream);
     }
+
+    public List<Block> getAltar() {
+        return conditions.get(RitualConditionKey.ALTAR).map(Altar::getBlocks).orElse(List.of());
+    }
+
+//    public List<ItemStack> getCatalyst(){return conditions.get(RitualConditionKey.CATALYST).map(Catalyst::getItems).orElse(List.of());}
 
 //    @Nonnull
 //    public Component dimensionsDescription() {

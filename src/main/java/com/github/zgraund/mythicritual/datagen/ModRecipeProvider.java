@@ -2,6 +2,7 @@ package com.github.zgraund.mythicritual.datagen;
 
 import com.github.zgraund.mythicritual.MythicRitual;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
+import com.github.zgraund.mythicritual.recipe.EffectHelper;
 import com.github.zgraund.mythicritual.recipe.condition.*;
 import com.github.zgraund.mythicritual.util.predicate.ClientLocationPredicate;
 import net.minecraft.advancements.critereon.BlockPredicate;
@@ -13,6 +14,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
@@ -36,29 +38,28 @@ public class ModRecipeProvider extends RecipeProvider {
         HolderLookup.RegistryLookup<Biome> biomesLookup = provider.lookupOrThrow(Registries.BIOME);
 
         RitualRecipeHelpers.builder(provider).result(RitualIngredient.of(Items.DIAMOND_BLOCK)).addConditions(
-                new Altar(Optional.of(BlockPredicate.Builder.block().of(BlockTags.WOOL).build()), Optional.empty()),
-                new Catalyst(Optional.of(Catalyst.EMPTY_HAND), Optional.of("spade seee")),
-                new Location(Optional.of(ClientLocationPredicate
+                new Altar(BlockPredicate.Builder.block().of(BlockTags.WOOL).build(), Optional.empty()),
+                new Catalyst(Catalyst.EMPTY_HAND, Optional.of("spade seee")),
+                new Location(ClientLocationPredicate
                         .builder()
                         .setBiomes(biomesLookup.getOrThrow(BiomeTags.HAS_VILLAGE_PLAINS))
                         .setDimensions(List.of(Level.OVERWORLD, Level.NETHER))
                         .setCanSeeSk(true)
                         .setLight(MinMaxBounds.Ints.between(1, 12))
                         .setSmokey(false)
-                        .build()), Optional.of("la location seee")),
-                new Time(Optional.of(MinMaxBounds.Ints.between(690, 42000)), Optional.of("nice")),
-                new Weather(Optional.of(Weather.Conditions.RAIN), Optional.of("piove meloni ladro"))
+                        .build(), Optional.of("la location seee")),
+                new Time(MinMaxBounds.Ints.between(690, 42000), Optional.of("nice")),
+                new Weather(Weather.Conditions.RAIN, Optional.of("piove meloni ladro"))
         ).save(recipeOutput, MythicRitual.id("test_new_system"));
 
         // No catalyst and player as ingredient
-//        RitualRecipeHelpers.builder(provider)
-//                           .altar(Blocks.GRASS_BLOCK)
-//                           .result(RitualIngredient.of(Items.BONE))
-//                           .addOfferings(RitualIngredient.of(EntityType.PLAYER))
-//                           .effect(EffectHelper.LIGHTNING)
-//                           .save(recipeOutput, MythicRitual.id("sacrifice_player"));
-//
-//        // Tool as catalyst with enchants, action: destroy catalyst
+        RitualRecipeHelpers.builder(provider)
+                           .result(RitualIngredient.of(Items.BONE))
+                           .addOfferings(RitualIngredient.of(EntityType.PLAYER))
+                           .effect(EffectHelper.LIGHTNING)
+                           .save(recipeOutput, MythicRitual.id("sacrifice_player"));
+
+        // Tool as catalyst with enchants, action: destroy catalyst
 //        ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
 //        axe.enchant(enchantmentsLookup.getOrThrow(Enchantments.UNBREAKING), 3);
 //        axe.enchant(enchantmentsLookup.getOrThrow(Enchantments.SHARPNESS), 5);

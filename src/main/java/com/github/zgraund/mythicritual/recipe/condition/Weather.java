@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.Level;
 
@@ -16,33 +15,35 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public record Weather(Optional<Conditions> condition, Optional<String> description) implements RitualCondition {
+public record Weather(Conditions condition, Optional<String> description) implements RitualCondition {
     public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            StringRepresentable.fromEnum(Conditions::values).optionalFieldOf("value").forGetter(Weather::condition),
+            StringRepresentable.fromEnum(Conditions::values).optionalFieldOf("value", Conditions.ANY).forGetter(Weather::condition),
             DESCRIPTION_CODEC.forGetter(Weather::description)
     ).apply(inst, Weather::new));
 
     @Override
-    public boolean test(RitualRecipeContext context) {
-        return condition.isEmpty() || condition.get().test(context.level());
+    public boolean test(@Nonnull RitualRecipeContext context) {
+        return condition.test(context.level());
     }
 
     @Nonnull
     @Override
     public List<Component> getDescription() {
         List<Component> lines = new ArrayList<>();
-        condition.ifPresent(conditions -> lines.add(
-                Component.translatable(
+        lines.add(Component.translatable(
                         "info.hover.ritual.condition.weather",
-                        Component.literal(conditions.name).withStyle(ChatFormatting.GREEN)
+                        Component.literal(condition.name).withStyle(ChatFormatting.GREEN)
                 ).withStyle(ChatFormatting.GRAY)
-        ));
+        );
         description.ifPresent(s -> lines.add(Component.literal(description().get()).withStyle(ChatFormatting.GRAY)));
         return lines;
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
+    public int order() {return 25;}
+
+    @Override
+    public RitualConditionKey<Weather> key() {
         return RitualConditionKey.WEATHER;
     }
 
@@ -52,6 +53,7 @@ public record Weather(Optional<Conditions> condition, Optional<String> descripti
     }
 
     public enum Conditions implements StringRepresentable, Predicate<Level> {
+        ANY("any", level -> true),
         CLEAR("clear", level -> !level.isRaining() && !level.isThundering()),
         RAIN("rain", Level::isRaining),
         THUNDER("thunder", Level::isThundering);

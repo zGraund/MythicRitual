@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,7 +19,12 @@ public interface RitualCondition {
 
     List<Component> getDescription();
 
-    ResourceLocation getResourceLocation();
+    /**
+     * Used for sorting the conditions, this determines the execution and info line order
+     */
+    default int order() {return 1;}
+
+    RitualConditionKey<? extends RitualCondition> key();
 
     MapCodec<? extends RitualCondition> type();
 
