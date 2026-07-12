@@ -6,11 +6,16 @@ import com.github.zgraund.mythicritual.component.ModDataComponents;
 import com.github.zgraund.mythicritual.damage.ModDamageTypes;
 import com.github.zgraund.mythicritual.ingredient.RitualIngredient;
 import com.github.zgraund.mythicritual.item.ModItems;
+import com.github.zgraund.mythicritual.recipe.action.ActionOnTransmute;
+import com.github.zgraund.mythicritual.recipe.condition.Altar;
+import com.github.zgraund.mythicritual.recipe.condition.RitualConditionKey;
+import com.github.zgraund.mythicritual.recipe.condition.RitualConditionMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.*;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
@@ -22,8 +27,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nonnull;
@@ -31,23 +35,26 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record RitualRecipe(
-        BlockState altar,
-        RitualIngredient catalyst,
+        RitualConditionMap conditions,
+//        BlockState altar,
+//        RitualIngredient catalyst,
+        // TODO: move to conditions
         Map<Vec3i, List<RitualIngredient>> locations,
         RitualIngredient result,
-        List<ResourceKey<Level>> dimensions,
-        HolderSet<Biome> biomes,
+//        List<ResourceKey<Level>> dimensions,
+//        HolderSet<Biome> biomes,
         EffectHelper effect,
-        List<ActionOnTransmute> onTransmute,
-        boolean needSky
+        List<Holder<ActionOnTransmute>> onTransmute
+//        boolean needSky
 ) implements Recipe<RitualRecipeContext> {
     @Override
     public boolean matches(@Nonnull RitualRecipeContext context, @Nonnull Level level) {
-        if (!context.accept(this)) return false;
+//        if (!context.accept(this)) return false;
+        if (!conditions.test(context)) return false;
+        // TODO: locations need to be moved to conditions system
         if (locations.isEmpty()) return true;
         HashMap<Vec3i, List<OfferingHolder>> inputEntities = context.getEntitiesByOffsets(locations.keySet());
         for (Map.Entry<Vec3i, List<RitualIngredient>> location : locations.entrySet()) {
@@ -73,7 +80,7 @@ public record RitualRecipe(
     @Nonnull
     public ItemStack assemble(@Nonnull RitualRecipeContext context, @Nonnull HolderLookup.Provider registries) {
         context.consume();
-        onTransmute.forEach(action -> action.apply(context, this));
+        onTransmute.forEach(action -> action.value().apply(context, this));
         effect.apply((ServerLevel) context.level(), context.origin().above());
         return result.asItemStack().copy();
     }
@@ -116,29 +123,49 @@ public record RitualRecipe(
         return locations.values().stream().flatMap(List::stream);
     }
 
-    @Nonnull
-    public Component dimensionsDescription() {
-        MutableComponent prefix = Component.literal("Dimensions: ").withStyle(ChatFormatting.GRAY);
-        String dim = dimensions.isEmpty() ? "All" : dimensions.stream().map(ResourceKey::location).toList().toString();
-        return prefix.append(Component.literal(dim).withStyle(ChatFormatting.GREEN));
+    public List<Block> getAltar() {
+        return conditions.get(RitualConditionKey.ALTAR).map(Altar::getBlocks).orElse(List.of());
     }
 
-    @Nonnull
-    public Component biomeDescription() {
-        MutableComponent prefix = Component.literal("Biomes: ").withStyle(ChatFormatting.GRAY);
-        String biome = biomes.size() == 0 ? "All" : biomes.stream().map(Holder::getRegisteredName).toList().toString();
-        return prefix.append(Component.literal(biome).withStyle(ChatFormatting.GREEN));
-    }
+//    public List<ItemStack> getCatalyst(){return conditions.get(RitualConditionKey.CATALYST).map(Catalyst::getItems).orElse(List.of());}
 
-    @Nonnull
-    public Component skyAccessDescription() {
-        MutableComponent prefix = Component.literal("Require access to sky: ").withStyle(ChatFormatting.GRAY);
-        return prefix.append(Component.literal(Boolean.toString(needSky)).withStyle(needSky ? ChatFormatting.GREEN : ChatFormatting.RED));
-    }
+//    @Nonnull
+//    public Component dimensionsDescription() {
+//        MutableComponent prefix = Component.literal("Dimensions: ").withStyle(ChatFormatting.GRAY);
+//        String dim = dimensions.isEmpty() ? "All" : dimensions.stream().map(ResourceKey::location).toList().toString();
+//        return prefix.append(Component.literal(dim).withStyle(ChatFormatting.GREEN));
+//    }
+//
+//    @Nonnull
+//    public Component biomeDescription() {
+//        MutableComponent prefix = Component.literal("Biomes: ").withStyle(ChatFormatting.GRAY);
+//        String biome = biomes.size() == 0 ? "All" : biomes.stream().map(Holder::getRegisteredName).toList().toString();
+//        return prefix.append(Component.literal(biome).withStyle(ChatFormatting.GREEN));
+//    }
+//
+//    @Nonnull
+//    public Component skyAccessDescription() {
+//        MutableComponent prefix = Component.literal("Require access to sky: ").withStyle(ChatFormatting.GRAY);
+//        return prefix.append(Component.literal(Boolean.toString(needSky)).withStyle(needSky ? ChatFormatting.GREEN : ChatFormatting.RED));
+//    }
 
     @Nonnull
     public List<Component> actionDescriptions() {
-        return onTransmute.stream().map(ActionOnTransmute::description).collect(Collectors.toList());
+        List<Component> actions = onTransmute.stream().map(Holder::value).map(ActionOnTransmute::getDescription).toList();
+        if (actions.isEmpty()) return List.of(Component.translatable("info.hover.ritual.action.empty").withStyle(ChatFormatting.BOLD, ChatFormatting.RED));
+        return actions;
+    }
+
+    @Nonnull
+    @Override
+    public String toString() {
+        return "RitualRecipe{" +
+               "conditions=" + conditions +
+               ", locations=" + locations +
+               ", result=" + result +
+               ", effect=" + effect +
+               ", actions=" + onTransmute +
+               '}';
     }
 
     @Nonnull

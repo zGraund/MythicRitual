@@ -6,5 +6,5 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
 
 public class ModDamageTypes {
-    public static final ResourceKey<DamageType> RITUAL_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, MythicRitual.ID("ritual_damage"));
+    public static final ResourceKey<DamageType> RITUAL_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, MythicRitual.id("ritual_damage"));
 }
