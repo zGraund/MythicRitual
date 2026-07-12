@@ -1,0 +1,13 @@
+{
+  "itemGroup.mythicritual": "Example Mod Tab",
+  "block.mythicritual.example_block": "Example Block",
+  "item.mythicritual.example_item": "Example Item",
+
+  "mythicritual.configuration.title": "Mythic Ritual Configs",
+  "mythicritual.configuration.section.mythicritual.common.toml": "Mythic Ritual Configs",
+  "mythicritual.configuration.section.mythicritual.common.toml.title": "Mythic Ritual Configs",
+  "mythicritual.configuration.items": "Item List",
+  "mythicritual.configuration.logDirtBlock": "Log Dirt Block",
+  "mythicritual.configuration.magicNumberIntroduction": "Magic Number Text",
+  "mythicritual.configuration.magicNumber": "Magic Number"
+}
