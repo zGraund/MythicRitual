@@ -38,3 +38,6 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+# ignored while in development
+src/generated/

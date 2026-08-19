@@ -1,48 +1,120 @@
 package com.github.zgraund.mythicritual.core;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 @ParametersAreNonnullByDefault
 public class RitualRecipeContext implements RecipeInput {
-    public final Player player;
-    public final Level level;
-    public final BlockPos origin;
-    public final HitResult hitResult;
+    private final Map<BlockPos, Pair<List<ItemStack>, List<Entity>>> entityCache = new HashMap<>();
     private final Map<Object, Runnable> inputCallbacks = new HashMap<>();
+    private final Player player;
+    private final Level level;
+    @Nullable
+    private BlockPos origin;
+    @Nullable
+    private HitResult hitResult;
 
-    public RitualRecipeContext(Player player, BlockPos origin) {
+    public RitualRecipeContext(Player player) {
         this.player = player;
         this.level = player.level();
-        this.origin = origin;
-        this.hitResult = ProjectileUtil.getHitResultOnViewVector(player, Entity::isAlive, player.blockInteractionRange());
     }
+
+    public BlockPos getOrigin() {
+        if (origin == null) {
+            HitResult hit = getHitResult();
+            this.origin = switch (hit) {
+                case EntityHitResult entityHit -> entityHit.getEntity().blockPosition();
+                case BlockHitResult blockHit -> blockHit.getBlockPos();
+                default -> BlockPos.ZERO;
+            };
+        }
+        return origin;
+    }
+
+    public HitResult getHitResult() {
+        if (hitResult == null)
+            this.hitResult = ProjectileUtil.getHitResultOnViewVector(player, Entity::isAlive, player.blockInteractionRange());
+        return hitResult;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public ItemStack getItemInHand() {
+        return getItem(0);
+    }
+
+    @Nonnull
+    public List<ItemStack> getItems(BlockPos pos) {
+        if (!entityCache.containsKey(pos)) {
+            fetchEntities(pos);
+        }
+        return entityCache.get(pos).getFirst();
+    }
+
+    @Nonnull
+    public List<Entity> getEntities(BlockPos pos) {
+        if (!entityCache.containsKey(pos)) {
+            fetchEntities(pos);
+        }
+        return entityCache.get(pos).getSecond();
+    }
+
+    private void fetchEntities(BlockPos pos) {
+        List<Entity> nonItems = new ArrayList<>();
+        List<ItemStack> items = new ArrayList<>();
+        level.getEntities((Entity) null, new AABB(pos), EntitySelector.ENTITY_STILL_ALIVE)
+             .forEach(entity -> {
+                 if (entity instanceof ItemEntity item)
+                     items.add(item.getItem());
+                 else
+                     nonItems.add(entity);
+             });
+        entityCache.put(pos, Pair.of(items, nonItems));
+    }
+
 
     public boolean canUseInput(Object key) {
         return inputCallbacks.containsKey(key);
     }
 
-    public void acceptInput(BlockPos pos, Runnable callback) {
-        inputCallbacks.put(pos, callback);
-    }
-
-    public void acceptInput(Entity entity, Runnable callback) {
-        inputCallbacks.put(entity, callback);
+    public <T> void acceptInput(T key, BiConsumer<T, ServerLevel> consumer) {
+        if (level.isClientSide())
+            return;
+        inputCallbacks.put(key, () -> consumer.accept(key, (ServerLevel) level));
     }
 
     public void processInputs() {
+        if (level.isClientSide())
+            return;
         inputCallbacks.values().forEach(Runnable::run);
     }
 
@@ -59,6 +131,7 @@ public class RitualRecipeContext implements RecipeInput {
 
     @Override
     public boolean isEmpty() {
-        return hitResult.getType() == HitResult.Type.MISS;
+        // TODO: pre-check for item from lookup
+        return false;
     }
 }

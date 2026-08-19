@@ -1,12 +1,13 @@
-package com.github.zgraund.mythicritual.components;
+package com.github.zgraund.mythicritual.component;
 
+import com.github.zgraund.mythicritual.api.component.RitualOutput;
 import com.github.zgraund.mythicritual.core.RitualRecipeContext;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -29,15 +30,12 @@ public class BlockOutput implements RitualOutput {
     }
 
     @Override
-    public void apply(RitualRecipeContext ctx, BlockPos pos) {
-        Level level = ctx.level;
-        if (!level.isClientSide()) {
-            boolean placed = level.setBlockAndUpdate(pos, state);
-            if (placed && !nbt.isEmpty()) {
-                BlockEntity entity = level.getBlockEntity(pos);
-                if (entity != null)
-                    entity.loadWithComponents(nbt, level.registryAccess());
-            }
+    public void apply(ServerLevel level, BlockPos pos, RitualRecipeContext ctx) {
+        boolean placed = level.setBlockAndUpdate(pos, state);
+        if (placed && !nbt.isEmpty()) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            if (entity != null)
+                entity.loadWithComponents(nbt, level.registryAccess());
         }
     }
 
